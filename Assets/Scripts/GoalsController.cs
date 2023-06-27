@@ -7,7 +7,7 @@ public class GoalsController : MonoBehaviour
 {
     private const int MaxCountModifier = 3;
 
-    [SerializeField] private List<Sprite> _sprites;
+    [SerializeField] private List<Sprite> _goalIcons;
 
     private readonly List<GoalSlot> _goals = new();
     private readonly List<GoalSlot> _spawnObjectsList = new();
@@ -15,7 +15,7 @@ public class GoalsController : MonoBehaviour
     private GameManager _gameManager;
     private GoalSlot.Factory _goalSlotFactory;
 
-    private int _currentindex;
+    private int _currentIndex;
     private GoalSlot _goal;
 
     [Inject]
@@ -27,14 +27,14 @@ public class GoalsController : MonoBehaviour
 
     private void Start()
     {
-        for (int i = 0; i < _sprites.Count; ++i)
+        for (int i = 0; i < _goalIcons.Count; ++i)
         {
-            var randomIndex = Random.Range(0, _sprites.Count);
-            var sprite = _sprites[randomIndex];
+            var randomIndex = Random.Range(0, _goalIcons.Count);
+            var sprite = _goalIcons[randomIndex];
 
             var newGoal = _goalSlotFactory.Create(sprite, transform, MaxCountModifier);
 
-            var isDuplicate = _goals.Any(existingGoal => existingGoal.name == newGoal.name);
+            var isDuplicate = _goals.Any(existingGoal => existingGoal.Id == newGoal.Id);
             if (isDuplicate)
             {
                 Destroy(newGoal.gameObject);
@@ -69,10 +69,10 @@ public class GoalsController : MonoBehaviour
         for (var i = 0; i < _goals.Count; i++)
         {
             _goal = _goals[i];
-            if (_goal.name == itemName)
+            if (_goal.Id == itemName)
             {
                 _goal.DecreaseGoalCount();
-                _currentindex = i;
+                _currentIndex = i;
                 if (_goal.GoalCount == 0)
                 {
                     _goal.GotCollected -= OnGotCollected;
@@ -84,16 +84,18 @@ public class GoalsController : MonoBehaviour
 
     private void RemoveAndShiftGoals()
     {
-        _goals[_currentindex].GoalDisable();
+        var goalToMove = _goals[_currentIndex];
+        goalToMove.GoalDisable();
 
-        var goalToMove = _goals[_currentindex];
-        _goals.RemoveAt(_currentindex);
-        _goals.Add(goalToMove);
-
-        for (int i = _currentindex; i < _goals.Count; ++i)
+        for (int i = _currentIndex + 1; i < _goals.Count; i++)
         {
-            _goals[i].SetNewParent(_goals[i].transform);
+            _goals[i].SetNewParent(_goals[i - 1].transform);
         }
+
+        goalToMove.SetNewParent(_goals[_goals.Count - 1].transform);
+
+        _goals.RemoveAt(_currentIndex);
+        _goals.Add(goalToMove);
     }
 
     private void OnGotCollected()

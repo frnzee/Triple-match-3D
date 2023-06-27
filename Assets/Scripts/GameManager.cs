@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Zenject;
-using Random = UnityEngine.Random;
 
 public class GameManager : MonoBehaviour
 {
@@ -23,20 +22,8 @@ public class GameManager : MonoBehaviour
         {
             for (int i = 0; i < goal.GoalCount; ++i)
             {
-                SpawnObjects(goal.name);
+                _itemControllerFactory.Create(goal.name, _spawnFieldTransform.transform);
             }
         }
-    }
-
-    private void SpawnObjects(string itemName)
-    {
-        var itemPosition = new Vector3(Random.Range(-2.5f, 2.5f), Random.Range(0.5f, 1.5f), Random.Range(-2.5f, 2.5f));
-        var itemRotation = Random.rotation;
-
-        var spawnedObject = _itemControllerFactory.Create(itemName);
-        var spawnedObjectTransform = spawnedObject.transform;
-        spawnedObjectTransform.position = itemPosition;
-        spawnedObjectTransform.rotation = itemRotation;
-        spawnedObject.transform.SetParent(_spawnFieldTransform.transform);
     }
 }

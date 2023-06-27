@@ -3,29 +3,30 @@ using UnityEngine;
 
 public class MovingController : MonoBehaviour
 {
-    private const float Threshold = 0.01f;
-
     [SerializeField] private AnimationCurve _curve;
 
     private readonly float _desiredTime = 1f;
     private Transform _startingPosition;
     private Vector3 _finalPosition;
     private float _elapsedTime;
-
-    public event Action ReachedFinalPosition;
+    private bool _canMove;
     
-    private void Start()
-    {
-        _startingPosition = transform;
-    }
+    public event Action ReachedFinalPosition;
 
-    public void Initialize(Vector3 finalPosition)
+    public void Launch(Vector3 finalPosition)
     {
+        _canMove = true;
+        _startingPosition = transform;
         _finalPosition = finalPosition;
     }
     
     private void Update()
     {
+        if (!_canMove)
+        {
+            return;
+        }
+        
         _elapsedTime += Time.deltaTime;
         
         var percentageComplete = _elapsedTime / _desiredTime;

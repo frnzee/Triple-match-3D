@@ -41,7 +41,7 @@ public class GameInstaller : MonoInstaller
 
     private void BindFactories()
     {
-        Container.BindFactory<string, ItemController, ItemController.Factory>()
+        Container.BindFactory<string, Transform, ItemController, ItemController.Factory>()
             .FromComponentInNewPrefab(_itemPrefab)
             .AsSingle()
             .Lazy();
@@ -52,7 +52,7 @@ public class GameInstaller : MonoInstaller
             .AsSingle()
             .Lazy();
         
-        Container.BindFactory<string, CollectedItem, CollectedItem.Factory>()
+        Container.BindFactory<Vector3, Transform, Sprite, CollectedItem, CollectedItem.Factory>()
             .FromComponentInNewPrefab(_collectedItemPrefab)
             .AsSingle()
             .Lazy();

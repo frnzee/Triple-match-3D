@@ -22,7 +22,7 @@ public class ClickHandler : MonoBehaviour
         _collectController = collectController;
     }
 
-    private void Awake()
+    private void Start()
     {
         _mainCamera = Camera.main;
     }
@@ -85,7 +85,7 @@ public class ClickHandler : MonoBehaviour
 
     private void ResetHoverSize(Transform target)
     {
-        if (target == null || !target.TryGetComponent(out ItemController itemController))
+        if (target == null || !target.GetComponent<ItemController>())
         {
             return;
         }
@@ -97,7 +97,7 @@ public class ClickHandler : MonoBehaviour
 
     private void HoverSize(Transform target)
     {
-        if (target == null || !target.TryGetComponent(out ItemController itemController))
+        if (target == null || !target.GetComponent<ItemController>())
         {
             return;
         }

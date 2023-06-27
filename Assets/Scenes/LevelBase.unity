@@ -2035,7 +2035,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9f2a245dac5a85744b5b31a0a7ce58a8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _sprites:
+  _goalIcons:
   - {fileID: 1390177097, guid: ac41d866f4beffc438b185e006fa7fc2, type: 3}
   - {fileID: -731456514, guid: 6b2bab58554161a4e84aa9f956cad277, type: 3}
   - {fileID: -1620731136, guid: c4db083878806b74b89e03c7105a3fbb, type: 3}

@@ -1,13 +1,20 @@
 using UnityEngine;
+using UnityEngine.UI;
 using Zenject;
 
 public class CollectedItem : MonoBehaviour
 {
+    public string Id { get; private set; }
+    
     [Inject]
-    public void Construct(string incomingName)
+    public void Construct(Vector3 initialPosition, Transform targetTransform, Sprite itemSprite)
     {
-        name = incomingName;
+        Id = itemSprite.name;
+        transform.position = initialPosition;
+        transform.SetParent(targetTransform);
+        GetComponent<Image>().sprite = itemSprite;
+        GetComponent<MovingController>().Launch(targetTransform.position);
     }
     
-    public class Factory : PlaceholderFactory<string, CollectedItem> { }
+    public class Factory : PlaceholderFactory<Vector3, Transform, Sprite, CollectedItem> { }
 }
