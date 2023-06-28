@@ -328,19 +328,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _image: {fileID: 4993506123190548199}
-  _sprites:
-  - {fileID: 1390177097, guid: ac41d866f4beffc438b185e006fa7fc2, type: 3}
-  - {fileID: -731456514, guid: 6b2bab58554161a4e84aa9f956cad277, type: 3}
-  - {fileID: -1620731136, guid: c4db083878806b74b89e03c7105a3fbb, type: 3}
-  - {fileID: -820679395, guid: 2bea683d46ceec44f999ce4cf923e549, type: 3}
-  - {fileID: 1433334035, guid: eb8deb1ccbdff78429b90e02e0f60b3e, type: 3}
-  - {fileID: 1243679783, guid: fa5268c93474dec4bb257594e751c50e, type: 3}
-  - {fileID: 619471860, guid: a1bf74b19e8a7624685d5d649c7be9d4, type: 3}
-  - {fileID: -586385592, guid: e046f5fd420c9bd49b8486824243764e, type: 3}
-  - {fileID: -1920945953, guid: 91dc719c7ac12734b8ef03914f010be8, type: 3}
-  - {fileID: 1050967402, guid: 5dd6b9e97e9f32445bc2123937cff72d, type: 3}
   _goalCountText: {fileID: 7405317407016662845}
-  _goalTransform: {fileID: 3699154342948938677}
+  _goalChild: {fileID: 3699154342948938677}
 --- !u!1 &5181062030698467926
 GameObject:
   m_ObjectHideFlags: 0

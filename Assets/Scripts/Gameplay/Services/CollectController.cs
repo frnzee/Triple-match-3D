@@ -1,6 +1,9 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Zenject;
+using Gameplay.Services;
+using Gameplay.UI;
 
 public class CollectController : MonoBehaviour
 {
@@ -12,6 +15,8 @@ public class CollectController : MonoBehaviour
 
     private int _currentIndex;
 
+    public event Action GotLoss;
+
     [Inject]
     public void Construct(CollectedItem.Factory collectedItemFactory, GoalsController goalsController)
     {
@@ -19,25 +24,41 @@ public class CollectController : MonoBehaviour
         _goalsController = goalsController;
     }
 
-    public void CollectItem(Vector3 itemPosition, Sprite itemSprite)
+    public void CollectItem(Vector3 itemPosition, Sprite itemIcon)
     {
-        var availableIndex = FindAvailableSpot(itemSprite);
-
-        var collectedItem = _collectedItemsFactory.Create(itemPosition, _itemsBases[availableIndex].transform, itemSprite);
-        
-        _goalsController.CheckGoalMatch(itemSprite.name);
-
-        _items.Insert(availableIndex, collectedItem);
-
-        var matchIndex = CheckForMatches(itemSprite);
-        if (matchIndex >= 0)
+        if (_items.Count < _itemsBases.Count)
         {
-            _currentIndex = matchIndex;
-            collectedItem.GetComponent<MovingController>().ReachedFinalPosition += OnReachedFinalPosition;
+            var availableIndex = FindAvailableSpot(itemIcon);
+
+            var collectedItem =
+                _collectedItemsFactory.Create(itemPosition, _itemsBases[availableIndex].transform, itemIcon);
+
+            _goalsController.CheckGoalMatch(itemIcon.name);
+
+            _items.Insert(availableIndex, collectedItem);
+
+            var matchIndex = CheckForMatches(itemIcon);
+            if (matchIndex >= 0)
+            {
+                _currentIndex = matchIndex;
+                collectedItem.GetComponent<MovingController>().ReachedFinalPosition += OnReachedFinalPosition;
+            }
+            else
+            {
+                collectedItem.GetComponent<MovingController>().ReachedFinalPosition += OnReachedFinalPositionCheckForLoss;
+            }
         }
     }
 
-    private int FindAvailableSpot(Object sprite)
+    private void OnReachedFinalPositionCheckForLoss()
+    {
+        if (_items.Count == _itemsBases.Count)
+        {
+            GotLoss?.Invoke();
+        }
+    }
+
+    private int FindAvailableSpot(Sprite sprite)
     {
         if (_items.Count != 0)
         {
@@ -76,8 +97,8 @@ public class CollectController : MonoBehaviour
 
         return _items.Count;
     }
-    
-    private int CheckForMatches(Object sprite)
+
+    private int CheckForMatches(Sprite sprite)
     {
         for (int i = 0; i < _items.Count - 2; i++)
         {
@@ -92,10 +113,15 @@ public class CollectController : MonoBehaviour
 
     private void RemoveAndShiftItems()
     {
-        for (int i = _currentIndex + 2; i >= _currentIndex; --i)
+        int itemCount = _items.Count;
+
+        if (_currentIndex >= 0 && _currentIndex + 2 < itemCount)
         {
-            Destroy(_items[i].gameObject);
-            _items.RemoveAt(i);
+            for (int i = _currentIndex + 2; i >= _currentIndex; --i)
+            {
+                Destroy(_items[i].gameObject);
+                _items.RemoveAt(i);
+            }
         }
 
         for (int i = 0; i < _items.Count; ++i)
