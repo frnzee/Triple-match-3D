@@ -9,12 +9,15 @@ namespace Installers
 {
     public class GameInstaller : MonoInstaller
     {
-        [Header("Instances")] [SerializeField] private GameManager _gameManager;
+        [Header("Instances")] 
+        [SerializeField] private GameManager _gameManager;
         [SerializeField] private CollectController _collectController;
         [SerializeField] private GoalsController _goalsController;
         [SerializeField] private GameTimer _gameTimer;
-
-        [Header("Prefabs")] [SerializeField] private GameObject _itemPrefab;
+        [SerializeField] private SlotBar _slotBar;
+        
+        [Header("Prefabs")]
+        [SerializeField] private GameObject _itemPrefab;
         [SerializeField] private GameObject _collectedItemPrefab;
         [SerializeField] private GameObject _goalSlotPrefab;
         [SerializeField] private GameObject _winMenuPrefab;
@@ -43,13 +46,18 @@ namespace Installers
                 .AsSingle()
                 .NonLazy();
 
-            Container.Bind<GoalSlot>()
+            Container.Bind<GoalView>()
                 .FromComponentInNewPrefab(_goalSlotPrefab)
                 .AsCached()
                 .Lazy();
 
             Container.Bind<GameTimer>()
                 .FromInstance(_gameTimer)
+                .AsSingle()
+                .NonLazy();
+
+            Container.Bind<SlotBar>()
+                .FromInstance(_slotBar)
                 .AsSingle()
                 .NonLazy();
         }
@@ -61,7 +69,7 @@ namespace Installers
                 .AsSingle()
                 .Lazy();
 
-            Container.BindFactory<Sprite, Transform, int, GoalSlot, GoalSlot.Factory>()
+            Container.BindFactory<Sprite, int, GoalView, GoalView.Factory>()
                 .FromComponentInNewPrefab(_goalSlotPrefab)
                 .UnderTransformGroup("GoalSlot")
                 .AsSingle()

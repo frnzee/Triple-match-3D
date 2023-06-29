@@ -1,4 +1,5 @@
 using Gameplay.Services;
+using Services;
 using UnityEngine;
 using Zenject;
 
@@ -7,17 +8,19 @@ namespace Gameplay.Views
     public class FailMenu : MonoBehaviour
     {
         private GameManager _gameManager;
+        private SceneNavigation _sceneNavigation;
 
         [Inject]
-        public void Construct(Transform parentTransform, GameManager gameManager)
+        public void Construct(Transform parentTransform, GameManager gameManager, SceneNavigation sceneNavigation)
         {
             _gameManager = gameManager;
             transform.SetParent(parentTransform, false);
+            _sceneNavigation = sceneNavigation;
         }
 
         public void LoadMainMenu()
         {
-            _gameManager.LoadMainMenu();
+            _sceneNavigation.LoadMainMenu();
         }
 
         public void ReplayLevel()

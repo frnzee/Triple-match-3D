@@ -1,33 +1,28 @@
 using UnityEngine;
-using UnityEngine.EventSystems;
 using Zenject;
 using TMPro;
 
 namespace Services
 {
-    public class LevelItem : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
+    public class LevelItem : MonoBehaviour
     {
         [SerializeField] private TextMeshProUGUI _levelButtonText;
-        private LevelSelector _levelSelector;
+        private int _id;
+        private SceneNavigation _sceneNavigation;
         private string _currentLevel;
      
         [Inject]
-        public void Construct(int levelNumber, Transform parentTransform, LevelSelector levelSelector)
+        public void Construct(int levelNumber, Transform parentTransform, SceneNavigation sceneNavigation)
         {
-            _levelSelector = levelSelector;
-            name = "Level" + levelNumber;
+            _sceneNavigation = sceneNavigation;
+            _id = levelNumber;
             _levelButtonText.text = "Level " + levelNumber;
             transform.SetParent(parentTransform);
         }
-
-        public void OnPointerDown(PointerEventData eventData)
+        
+        public void OnClick()
         {
-            
-        }
-
-        public void OnPointerUp(PointerEventData eventData)
-        {
-            _levelSelector.LoadLevel(name);
+            _sceneNavigation.LoadLevel(_id);
         }
 
         public class Factory : PlaceholderFactory<int, Transform, LevelItem>

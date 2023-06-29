@@ -8,15 +8,14 @@ using Random = UnityEngine.Random;
 
 namespace Gameplay
 {
-    public class CollectableItem : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IPointerEnterHandler,
-        IPointerExitHandler
+    public class CollectableItem : MonoBehaviour, IPointerUpHandler, IPointerEnterHandler, IPointerExitHandler
     {
         [SerializeField] private List<GameObject> _itemsSet1;
         [SerializeField] private List<GameObject> _itemsSet2;
         [SerializeField] private List<GameObject> _itemsSet3;
 
-        private const float HoverScaleMultiplier = 1.2f;
-        private const float HoverDuration = 0.1f;
+        private const float HoverScaleMultiplier = 1.1f;
+        private const float HoverDuration = 0.2f;
 
         private Camera _mainCamera;
         private CollectController _collectController;
@@ -62,12 +61,7 @@ namespace Gameplay
                 HoverSize();
             }
         }
-
-
-        public void OnPointerDown(PointerEventData eventData)
-        {
-        }
-
+        
         public void OnPointerUp(PointerEventData eventData)
         {
             if (_gameManager.CurrentGameState == GameState.Game)

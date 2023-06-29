@@ -31,8 +31,7 @@ namespace Gameplay.Services
             {
                 var availableIndex = FindAvailableSpot(itemIcon);
 
-                var collectedItem =
-                    _collectedItemsFactory.Create(itemPosition, _itemsBases[availableIndex].transform, itemIcon);
+                var collectedItem = _collectedItemsFactory.Create(itemPosition, _itemsBases[availableIndex].transform, itemIcon);
 
                 _goalsController.CheckGoalMatch(itemIcon.name);
 
@@ -46,8 +45,7 @@ namespace Gameplay.Services
                 }
                 else
                 {
-                    collectedItem.GetComponent<MovingController>().ReachedFinalPosition +=
-                        OnReachedFinalPositionCheckForLoss;
+                    collectedItem.GetComponent<MovingController>().ReachedFinalPosition += OnReachedFinalPositionCheckForLoss;
                 }
             }
         }

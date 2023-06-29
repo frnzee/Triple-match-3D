@@ -8,6 +8,11 @@ namespace Installers
         public override void InstallBindings()
         {
             BindScenes();
+
+            Container.Bind<SceneNavigation>()
+                .FromNew()
+                .AsSingle()
+                .Lazy();
         }
 
         private void BindScenes()
