@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.UI;
 using Zenject;
 using Random = UnityEngine.Random;
 using Gameplay.UI;
@@ -14,8 +15,9 @@ namespace Gameplay.Services
 
         [SerializeField] private List<Sprite> _goalIcons;
 
-        private readonly List<GoalSlot> _goals = new();
-        private readonly List<GoalSlot> _spawnObjectsList = new();
+        private List<GoalSlot> _goals = new();
+        private readonly List<GoalSlot> _spawnObjectList = new();
+        private List<GoalSlot> _goalsForReplay;
 
         private GameManager _gameManager;
         private GoalSlot.Factory _goalSlotFactory;
@@ -39,10 +41,11 @@ namespace Gameplay.Services
             {
                 var randomIndex = Random.Range(0, _goalIcons.Count);
                 var sprite = _goalIcons[randomIndex];
-
-                var newGoal = _goalSlotFactory.Create(sprite, transform, MaxCountModifier);
+                var goalCount = Random.Range(1, MaxCountModifier) * 3;
+                var newGoal = _goalSlotFactory.Create(sprite, transform, goalCount);
 
                 var isDuplicate = _goals.Any(existingGoal => existingGoal.Id == newGoal.Id);
+
                 if (isDuplicate)
                 {
                     Destroy(newGoal.gameObject);
@@ -54,16 +57,18 @@ namespace Gameplay.Services
                     {
                         newGoal.transform.SetParent(transform);
                         _goals.Add(newGoal);
-                        _spawnObjectsList.Add(newGoal);
+                        _spawnObjectList.Add(newGoal);
                     }
                     else
                     {
-                        _spawnObjectsList.Add(newGoal);
+                        _spawnObjectList.Add(newGoal);
                     }
                 }
             }
 
-            _gameManager.SetUpItems(_spawnObjectsList);
+            _goalsForReplay = _goals.ToList();
+
+            _gameManager.SetUpItems(_spawnObjectList);
 
             foreach (var goal in _goals)
             {
@@ -102,14 +107,7 @@ namespace Gameplay.Services
                 _goals[i].SetNewGoalChild(_goals[i + 1].GoalChild);
             }
 
-            _goals[_goals.Count - 1].SetNewGoalChild(_goal.GoalChild);
-            
-            foreach (var goal in _goals)
-            {
-                Debug.Log(goal);
-                Debug.Log(goal.GoalChild);
-            }
-            Debug.Log("===============================");
+            _goals[^1].SetNewGoalChild(_goal.GoalChild);
         }
 
         private void OnGotCollected()
@@ -121,6 +119,28 @@ namespace Gameplay.Services
             if (_goalsForTheWin <= 0)
             {
                 GotWin?.Invoke();
+            }
+        }
+
+        public void ResetGoalsForReplay()
+        {
+            foreach (var oldGoal in _goals)
+            {
+                Destroy(oldGoal.gameObject);
+            }
+
+            _goals.Clear();
+
+            Debug.Log(_goalsForReplay.Count);
+            for (int i = 0; i < _goalsForReplay.Count; i++)
+            {
+                Debug.Log("Restore goals " + i);
+                var newGoal = _goalSlotFactory.Create(_goalsForReplay[i].GetComponentInChildren<Image>().sprite, transform,
+                    _goalsForReplay[i].GoalCount);
+
+                newGoal.transform.SetParent(transform);
+                _goals.Add(newGoal);
+                _spawnObjectList.Add(newGoal);
             }
         }
     }

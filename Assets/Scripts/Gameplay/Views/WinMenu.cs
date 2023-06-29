@@ -11,21 +11,24 @@ namespace Gameplay.Views
         [SerializeField] private GameObject[] _stars;
 
         private GameManager _gameManager;
-        private float _timeSpent;
         private int _starsCount;
 
         [Inject]
         public void Construct(Transform parentTransform, float timeSpent, int starsCount, GameManager gameManager)
         {
             _gameManager = gameManager;
-            _timeSpent = timeSpent;
+
+            var minutes = Mathf.FloorToInt(timeSpent / 60f);
+            var seconds = Mathf.FloorToInt(timeSpent % 60f);
+            
+            _timeText.text = string.Format("{0:0}:{1:00}", minutes, seconds);
             _starsCount = starsCount;
             transform.SetParent(parentTransform, false);
         }
-
-        private void Start()
+        
+        public void LoadMainMenu()
         {
-            _timeText.text = "4:19";
+            _gameManager.LoadMainMenu();
         }
 
         public class Factory : PlaceholderFactory<Transform, float, int, WinMenu>

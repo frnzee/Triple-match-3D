@@ -12,6 +12,7 @@ namespace Installers
         [Header("Instances")] [SerializeField] private GameManager _gameManager;
         [SerializeField] private CollectController _collectController;
         [SerializeField] private GoalsController _goalsController;
+        [SerializeField] private GameTimer _gameTimer;
 
         [Header("Prefabs")] [SerializeField] private GameObject _itemPrefab;
         [SerializeField] private GameObject _collectedItemPrefab;
@@ -46,6 +47,11 @@ namespace Installers
                 .FromComponentInNewPrefab(_goalSlotPrefab)
                 .AsCached()
                 .Lazy();
+
+            Container.Bind<GameTimer>()
+                .FromInstance(_gameTimer)
+                .AsSingle()
+                .NonLazy();
         }
 
         private void BindFactories()

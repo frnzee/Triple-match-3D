@@ -1,5 +1,4 @@
-using UnityEngine;
-using Services.Loading;
+using Services;
 using Zenject;
 
 namespace Installers
