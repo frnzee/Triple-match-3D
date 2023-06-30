@@ -1,5 +1,7 @@
-﻿using UnityEngine;
+﻿using Services.Audio;
+using UnityEngine;
 using UnityEngine.EventSystems;
+using Zenject;
 
 namespace Gameplay.Services
 {
@@ -12,6 +14,14 @@ namespace Gameplay.Services
         private Vector3 _originalScale;
         private float _hoverTimer;
         private bool _isHovering;
+
+        private AudioManager _audioManager;
+
+        [Inject]
+        public void Construct(AudioManager audioManager)
+        {
+            _audioManager = audioManager;
+        }
         
         private void Start()
         {
@@ -28,6 +38,7 @@ namespace Gameplay.Services
 
         public void OnPointerEnter(PointerEventData eventData)
         {
+            _audioManager.Play("ItemHover");
             _isHovering = true;
             HoverSize();
         }

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Gameplay.Services;
+using Services.Audio;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -15,16 +16,16 @@ namespace Gameplay
         private const float VerticalRandomModifier = 1.5f;
         
         [SerializeField] private List<GameObject> _items;
-
-
+        
         private CollectController _collectController;
         private GameManager _gameManager;
+        private AudioManager _audioManager;
         public string Id { get; private set; }
         public Sprite Icon2D { get; private set; }
 
         [Inject]
         public void Construct(string incomingName, Transform parentTransform, CollectController collectController,
-            GameManager gameManager)
+            GameManager gameManager, AudioManager audioManager)
         {
             Id = incomingName;
             transform.position = new Vector3(Random.Range(-HorizontalRandomModifier, HorizontalRandomModifier), 
@@ -34,6 +35,7 @@ namespace Gameplay
             transform.SetParent(parentTransform);
             _collectController = collectController;
             _gameManager = gameManager;
+            _audioManager = audioManager;
         }
 
         private void Start()
@@ -52,6 +54,8 @@ namespace Gameplay
         {
             if (_gameManager.CurrentGameState == GameState.Game)
             {
+                _audioManager.Play("ItemClick");
+                    
                 _collectController.CollectItem(eventData.position, Icon2D);
                 _gameManager.RemoveItem(this);
                 Destroy(gameObject);

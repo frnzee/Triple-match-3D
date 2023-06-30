@@ -6,6 +6,7 @@ using Zenject;
 using Gameplay.Views;
 using Gameplay.UI;
 using Services;
+using Services.Audio;
 using Random = UnityEngine.Random;
 
 namespace Gameplay.Services
@@ -26,6 +27,7 @@ namespace Gameplay.Services
         private GoalsController _goalsController;
         private CollectController _collectController;
         private SceneNavigation _sceneNavigation;
+        private AudioManager _audioManager;
         
         private GameTimer _gameTimer;
         
@@ -43,12 +45,13 @@ namespace Gameplay.Services
         [Inject]
         public void Construct(CollectableItem.Factory collectableItemFactory, CollectController collectController,
             GoalsController goalsController, GameTimer gameTimer, WinMenu.Factory winMenuFactory,
-            FailMenu.Factory failMenuFactory, GoalView.Factory goalViewFactory, SceneNavigation sceneNavigation)
+            FailMenu.Factory failMenuFactory, GoalView.Factory goalViewFactory, SceneNavigation sceneNavigation, AudioManager audioManager)
         {
             _sceneNavigation = sceneNavigation;
             _goalsController = goalsController;
             _collectController = collectController;
             _gameTimer = gameTimer;
+            _audioManager = audioManager;
 
             _collectableItemFactory = collectableItemFactory;
             _winMenuFactory = winMenuFactory;
@@ -103,6 +106,7 @@ namespace Gameplay.Services
 
         private void OnWin()
         {
+            _audioManager.Play("Win");
             CurrentGameState = GameState.Win;
             _winMenuFactory.Create(_mainCanvas.transform, _gameTimer.GameTime, 2);
             _goalsController.GotWin -= OnWin;
@@ -110,6 +114,7 @@ namespace Gameplay.Services
 
         private void OnLose()
         {
+            _audioManager.Play("Loss");
             CurrentGameState = GameState.Lose;
             _failMenuFactory.Create(_mainCanvas.transform);
             _collectController.GotLoss -= OnLose;
@@ -166,6 +171,7 @@ namespace Gameplay.Services
 
         public void LoadMainMenu()
         {
+            _audioManager.Play("ButtonClick");
             _sceneNavigation.LoadMainMenu();
         }
     }
