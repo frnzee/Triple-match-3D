@@ -14,9 +14,8 @@ namespace Gameplay
         private const float MinVerticalRandomModifier = 0.5f;
         private const float VerticalRandomModifier = 1.5f;
         
-        [SerializeField] private List<GameObject> _itemsSet1;
-        [SerializeField] private List<GameObject> _itemsSet2;
-        [SerializeField] private List<GameObject> _itemsSet3;
+        [SerializeField] private List<GameObject> _items;
+
 
         private CollectController _collectController;
         private GameManager _gameManager;
@@ -39,7 +38,7 @@ namespace Gameplay
 
         private void Start()
         {
-            foreach (var item in _itemsSet2)
+            foreach (var item in _items)
             {
                 if (item.name == Id)
                 {

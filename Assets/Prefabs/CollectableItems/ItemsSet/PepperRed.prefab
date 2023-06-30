@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 6349471570894638858}
   - component: {fileID: -618474637816015499}
   m_Layer: 0
-  m_Name: Pepper
+  m_Name: PepperRed
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

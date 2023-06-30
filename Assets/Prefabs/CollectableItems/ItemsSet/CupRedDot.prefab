@@ -97,7 +97,7 @@ GameObject:
   - component: {fileID: 2971593137654914171}
   - component: {fileID: -5106664905188346199}
   m_Layer: 0
-  m_Name: Cup
+  m_Name: CupRedDot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

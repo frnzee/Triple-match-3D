@@ -17,9 +17,8 @@ namespace Gameplay.Services
         [SerializeField] private GameObject _spawnFieldTransform;
         [SerializeField] private GameObject _mainCanvas;
         [SerializeField] private List<Sprite> _goalIcons;
-        [SerializeField] private List<Sprite> _goalIcons2;
-        [SerializeField] private List<Sprite> _goalIcons3;
         [SerializeField] private int _maxCountModifier;
+        [SerializeField] private int _itemsToUseCount;
 
         private readonly List<CollectableItem> _collectableItems = new();
         private readonly List<GoalView> _spawnObjectList = new();
@@ -45,31 +44,33 @@ namespace Gameplay.Services
             GoalsController goalsController, GameTimer gameTimer, WinMenu.Factory winMenuFactory,
             FailMenu.Factory failMenuFactory, GoalView.Factory goalViewFactory, SceneNavigation sceneNavigation)
         {
-            _collectableItemFactory = collectableItemFactory;
+            _sceneNavigation = sceneNavigation;
             _goalsController = goalsController;
             _collectController = collectController;
             _gameTimer = gameTimer;
+
+            _collectableItemFactory = collectableItemFactory;
             _winMenuFactory = winMenuFactory;
             _failMenuFactory = failMenuFactory;
             _goalViewFactory = goalViewFactory;
-            _sceneNavigation = sceneNavigation;
 
             _goalsController.GotWin += OnWin;
             _collectController.GotLoss += OnLose;
             _gameTimer.TimeIsOver += OnLose;
 
             CurrentGameState = GameState.None;
+            
             SetUpGoals();
         }
 
         private void SetUpGoals()
         {
 
-            var shuffledList = _goalIcons2
+            var shuffledList = _goalIcons
                 .OrderBy(icon => Guid.NewGuid())
                 .ToList();
 
-            for (int i = 0; i < shuffledList.Count; i++)
+            for (int i = 0; i < _itemsToUseCount; i++)
             {
                 var sprite = shuffledList[i];
                 var goalCount = Random.Range(1, _maxCountModifier) * MatchCountMultiplier;
@@ -145,7 +146,7 @@ namespace Gameplay.Services
 
         private void SpawnSameItems()
         {
-            for (int i = 0; i < _goalIcons.Count; i++)
+            for (int i = 0; i < _itemsToUseCount; i++)
             {
                 var newGoal = _goalViewFactory.Create(_originalSprites[i], _originalCounts[i]);
                 _spawnObjectList.Add(newGoal);
