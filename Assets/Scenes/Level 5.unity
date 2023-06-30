@@ -240,6 +240,7 @@ GameObject:
   - component: {fileID: 170449705}
   - component: {fileID: 170449704}
   - component: {fileID: 170449706}
+  - component: {fileID: 170449707}
   m_Layer: 5
   m_Name: LoadMainMenu
   m_TagString: Untagged
@@ -362,6 +363,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!114 &170449707
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 170449702}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8c35eae999748cf9c71da4449846936, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &259540181
 GameObject:
   m_ObjectHideFlags: 0
@@ -2792,8 +2805,9 @@ GameObject:
   - component: {fileID: 1776209285}
   - component: {fileID: 1776209284}
   - component: {fileID: 1776209283}
+  - component: {fileID: 1776209286}
   m_Layer: 5
-  m_Name: Image
+  m_Name: FanBooster
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2914,6 +2928,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1776209281}
   m_CullTransparentMesh: 1
+--- !u!114 &1776209286
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1776209281}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8c35eae999748cf9c71da4449846936, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1793657156
 GameObject:
   m_ObjectHideFlags: 0
@@ -3014,7 +3040,7 @@ GameObject:
   - component: {fileID: 1831117275}
   - component: {fileID: 1831117274}
   m_Layer: 5
-  m_Name: Image
+  m_Name: FanImage
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Zenject;
 using Gameplay.UI;
+using Services.Audio;
 
 namespace Gameplay.Services
 {
@@ -12,7 +13,7 @@ namespace Gameplay.Services
 
         private int _currentIndex;
         private int _goalsToWin;
-
+        
         public List<GoalView> Goals { get; } = new();
 
         public event Action GotWin;

@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using Zenject;
 using Gameplay.UI;
+using Services.Audio;
+using TMPro;
 
 namespace Gameplay.Services
 {
@@ -13,16 +15,18 @@ namespace Gameplay.Services
         private readonly List<CollectedItem> _items = new();
         private CollectedItem.Factory _collectedItemsFactory;
         private GoalsController _goalsController;
+        private AudioManager _audioManager;
 
         private int _currentIndex;
 
         public event Action GotLoss;
 
         [Inject]
-        public void Construct(CollectedItem.Factory collectedItemFactory, GoalsController goalsController)
+        public void Construct(CollectedItem.Factory collectedItemFactory, GoalsController goalsController, AudioManager audioManager)
         {
             _collectedItemsFactory = collectedItemFactory;
             _goalsController = goalsController;
+            _audioManager = audioManager;
         }
 
         public void CollectItem(Vector3 itemPosition, Sprite itemIcon)
@@ -113,6 +117,7 @@ namespace Gameplay.Services
 
         private void RemoveAndShiftItems()
         {
+            _audioManager.Play("3ItemsMatch");
             int itemCount = _items.Count;
 
             if (_currentIndex >= 0 && _currentIndex + 2 < itemCount)
