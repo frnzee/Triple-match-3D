@@ -152,7 +152,7 @@ namespace Gameplay.Services
         {
             foreach (var oldItem in _items)
             {
-                Destroy(oldItem);
+                Destroy(oldItem.gameObject);
             }
 
             _items.Clear();

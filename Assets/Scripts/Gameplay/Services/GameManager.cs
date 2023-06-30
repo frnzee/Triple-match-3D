@@ -4,35 +4,42 @@ using UnityEngine;
 using Zenject;
 using Gameplay.Views;
 using Gameplay.UI;
+using Services;
 
 namespace Gameplay.Services
 {
     public class GameManager : MonoBehaviour
     {
-        private const int MaxCountModifier = 2;
-
+        private const int MatchCountMultiplier = 3;
+        
         [SerializeField] private GameObject _spawnFieldTransform;
         [SerializeField] private GameObject _mainCanvas;
         [SerializeField] private List<Sprite> _goalIcons;
+        [SerializeField] private int _maxCountModifier;
 
-        private CollectableItem.Factory _collectableItemFactory;
+        private readonly List<CollectableItem> _collectableItems = new();
+        private List<GoalView> _spawnObjectList = new();
+
         private GoalsController _goalsController;
         private CollectController _collectController;
+        private SceneNavigation _sceneNavigation;
+        
         private GameTimer _gameTimer;
+        
+        private List<int> _originalCounts = new();
+        private List<Sprite> _originalSprites = new();
+
+        private GoalView.Factory _goalViewFactory;
+        private CollectableItem.Factory _collectableItemFactory;
         private WinMenu.Factory _winMenuFactory;
         private FailMenu.Factory _failMenuFactory;
-        private List<GoalView> _goals = new();
-        private List<GoalView> _goalsForReplay = new();
-        private List<CollectableItem> _collectableItems = new();
-        private readonly List<GoalView> _spawnObjectList = new();
-        private GoalView.Factory _goalSlotFactory;
         
         public GameState CurrentGameState { get; private set; }
-        
+
         [Inject]
         public void Construct(CollectableItem.Factory collectableItemFactory, CollectController collectController,
             GoalsController goalsController, GameTimer gameTimer, WinMenu.Factory winMenuFactory,
-            FailMenu.Factory failMenuFactory, GoalView.Factory goalSlotFactory)
+            FailMenu.Factory failMenuFactory, GoalView.Factory goalViewFactory, SceneNavigation sceneNavigation)
         {
             _collectableItemFactory = collectableItemFactory;
             _goalsController = goalsController;
@@ -40,49 +47,37 @@ namespace Gameplay.Services
             _gameTimer = gameTimer;
             _winMenuFactory = winMenuFactory;
             _failMenuFactory = failMenuFactory;
-            _goalSlotFactory = goalSlotFactory;
+            _goalViewFactory = goalViewFactory;
+            _sceneNavigation = sceneNavigation;
 
             _goalsController.GotWin += OnWin;
             _collectController.GotLoss += OnLose;
             _gameTimer.TimeIsOver += OnLose;
-            
+
             SetUpGoals();
         }
 
         private void SetUpGoals()
         {
-            for (int i = 0; i < _goalIcons.Count; ++i)
+            var goalIndexes = Enumerable.Range(0, _goalIcons.Count).ToList();
+            goalIndexes.Shuffle();
+
+            for (int i = 0; i < _goalIcons.Count; i++)
             {
-                var randomIndex = Random.Range(0, _goalIcons.Count);
-                var sprite = _goalIcons[randomIndex];
-                var goalCount = Random.Range(1, MaxCountModifier) * 3;
-                var newGoal = _goalSlotFactory.Create(sprite, goalCount);
+                var index = goalIndexes[i];
+                var sprite = _goalIcons[index];
+                var goalCount = Random.Range(1, _maxCountModifier) * MatchCountMultiplier;
+                var newGoal = _goalViewFactory.Create(sprite, goalCount);
+                
+                _originalSprites.Add(sprite);
+                _originalCounts.Add(goalCount);
 
-                var isDuplicate = _goals.Any(existingGoal => existingGoal.Id == newGoal.Id);
-
-                if (isDuplicate)
-                {
-                    Destroy(newGoal.gameObject);
-                    i--;
-                }
-                else
-                {
-                    if (_goals.Count < _goalsController.Goals.Count)
-                    {
-                       _goals.Add(newGoal);
-                        _spawnObjectList.Add(newGoal);
-                    }
-                    else
-                    {
-                        _spawnObjectList.Add(newGoal);
-                    }
-                }
+                _spawnObjectList.Add(newGoal);
             }
-            
-            _goalsForReplay = _goals.ToList();
             
             SetUpItems();
         }
+
 
         private void SetUpItems()
         {
@@ -94,7 +89,7 @@ namespace Gameplay.Services
                     _collectableItems.Add(item);
                 }
             }
-            
+
             CurrentGameState = GameState.Game;
             _gameTimer.ResetTimer();
         }
@@ -118,20 +113,37 @@ namespace Gameplay.Services
         {
             _collectableItems.Remove(itemToRemove);
         }
-        
+
         public void ReplayLevel()
         {
-            //_goalsController.ResetGoalsForReplay();
-            
+            _goalsController.ClearGoalsForReplay();
+
             foreach (var item in _collectableItems)
             {
                 Destroy(item.gameObject);
             }
             _collectableItems.Clear();
-            
-            _collectController.ClearSlots();
 
+            foreach (var item in _spawnObjectList)
+            {
+                Destroy(item.gameObject);
+            }
+            _spawnObjectList.Clear();
+
+            _collectController.ClearSlots();
+            
+            for (int i = 0; i < _goalIcons.Count; i++)
+            {
+                var newGoal = _goalViewFactory.Create(_originalSprites[i], _originalCounts[i]);
+                _spawnObjectList.Add(newGoal);
+            }
+            
             SetUpItems();
+        }
+
+        public void LoadMainMenu()
+        {
+            _sceneNavigation.LoadMainMenu();
         }
     }
 }

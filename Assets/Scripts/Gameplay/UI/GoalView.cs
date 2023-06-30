@@ -14,9 +14,10 @@ namespace Gameplay.UI
 
         private int _currentGoalCount;
         private GoalsController _goalsController;
-
+        
         public string Id { get; private set; }
         public int GoalCount { get; private set; }
+        public Sprite GoalSprite => _image.sprite;
         public event Action GotCollected;
 
         [Inject]
@@ -28,12 +29,12 @@ namespace Gameplay.UI
             GoalCount = goalCount;
             _goalCountText.text = goalCount.ToString();
         }
-
+        
         private void Start()
         {
             _goalsController.AddGoal(this);
         }
-
+        
         public void InitializePosition()
         {
             GetComponent<MovingController>().Launch(transform.parent.position);

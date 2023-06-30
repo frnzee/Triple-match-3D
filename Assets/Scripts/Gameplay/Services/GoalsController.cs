@@ -64,5 +64,14 @@ namespace Gameplay.Services
                 GotWin?.Invoke();
             }
         }
+
+        public void ClearGoalsForReplay()
+        {
+            foreach (var goal in Goals)
+            {
+                Destroy(goal.gameObject);
+            }
+            Goals.Clear();
+        }
     }
 }

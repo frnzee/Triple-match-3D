@@ -23,8 +23,9 @@ namespace Gameplay.UI
             for (int i = 0; i < _goalsController.Goals.Count - 1; i++)
             {
                 var goal = _goalsController.Goals[i];
-                goal.transform.SetParent(_goalSlots[i].transform);
-                goal.transform.localPosition = Vector3.zero;
+                goal.transform.SetParent(_goalSlots[i].transform, false);
+                //goal.Init(_goalSlots[i].transform);
+                //goal.transform.localPosition = Vector3.zero;
                 goal.InitializePosition();
             }
         }
