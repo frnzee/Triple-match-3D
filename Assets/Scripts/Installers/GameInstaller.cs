@@ -1,6 +1,7 @@
 using UnityEngine;
 using Zenject;
 using Gameplay;
+using Gameplay.Boosters;
 using Gameplay.Views;
 using Gameplay.Services;
 using Gameplay.UI;
@@ -23,10 +24,13 @@ namespace Installers
         [SerializeField] private GameObject _winMenuPrefab;
         [SerializeField] private GameObject _failMenuPrefab;
 
+        [Header("Boosters")]
+        [SerializeField] private GameObject _fanPrefab;
         public override void InstallBindings()
         {
             BindFactories();
             BindControllers();
+            BindBoosters();
         }
 
         private void BindControllers()
@@ -71,7 +75,7 @@ namespace Installers
 
             Container.BindFactory<Sprite, int, GoalView, GoalView.Factory>()
                 .FromComponentInNewPrefab(_goalSlotPrefab)
-                .UnderTransformGroup("GoalSlot")
+                .UnderTransformGroup("NonGoalItems")
                 .AsSingle()
                 .Lazy();
 
@@ -87,6 +91,14 @@ namespace Installers
 
             Container.BindFactory<Transform, FailMenu, FailMenu.Factory>()
                 .FromComponentInNewPrefab(_failMenuPrefab)
+                .AsSingle()
+                .Lazy();
+        }
+
+        private void BindBoosters()
+        {
+            Container.BindFactory<Fan, Fan.Factory>()
+                .FromComponentInNewPrefab(_fanPrefab)
                 .AsSingle()
                 .Lazy();
         }
