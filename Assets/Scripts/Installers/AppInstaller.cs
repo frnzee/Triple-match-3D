@@ -1,5 +1,4 @@
-using UnityEngine;
-using Services.Loading;
+using Services;
 using Zenject;
 
 namespace Installers
@@ -9,6 +8,11 @@ namespace Installers
         public override void InstallBindings()
         {
             BindScenes();
+
+            Container.Bind<SceneNavigation>()
+                .FromNew()
+                .AsSingle()
+                .Lazy();
         }
 
         private void BindScenes()

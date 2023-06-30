@@ -1,57 +1,171 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using Zenject;
 using Gameplay.Views;
 using Gameplay.UI;
+using Services;
+using Random = UnityEngine.Random;
 
 namespace Gameplay.Services
 {
     public class GameManager : MonoBehaviour
     {
+        private const int MatchCountMultiplier = 3;
+        
         [SerializeField] private GameObject _spawnFieldTransform;
         [SerializeField] private GameObject _mainCanvas;
-    
-        private CollectableItem.Factory _itemControllerFactory;
+        [SerializeField] private List<Sprite> _goalIcons;
+        [SerializeField] private int _maxCountModifier;
+        [SerializeField] private int _itemsToUseCount;
+
+        private readonly List<CollectableItem> _collectableItems = new();
+        private readonly List<GoalView> _spawnObjectList = new();
+
         private GoalsController _goalsController;
         private CollectController _collectController;
+        private SceneNavigation _sceneNavigation;
+        
+        private GameTimer _gameTimer;
+        
+        private readonly List<int> _originalCounts = new();
+        private readonly List<Sprite> _originalSprites = new();
+
+        private GoalView.Factory _goalViewFactory;
+        private CollectableItem.Factory _collectableItemFactory;
         private WinMenu.Factory _winMenuFactory;
         private FailMenu.Factory _failMenuFactory;
-        private List<GoalSlot> _goalSlots;
-    
+        
+        public GameState CurrentGameState { get; private set; }
+
         [Inject]
-        public void Construct(CollectableItem.Factory itemControllerFactory, CollectController collectController,
-            GoalsController goalsController, WinMenu.Factory winMenuFactory, FailMenu.Factory failMenuFactory)
+        public void Construct(CollectableItem.Factory collectableItemFactory, CollectController collectController,
+            GoalsController goalsController, GameTimer gameTimer, WinMenu.Factory winMenuFactory,
+            FailMenu.Factory failMenuFactory, GoalView.Factory goalViewFactory, SceneNavigation sceneNavigation)
         {
-            _itemControllerFactory = itemControllerFactory;
+            _sceneNavigation = sceneNavigation;
             _goalsController = goalsController;
             _collectController = collectController;
+            _gameTimer = gameTimer;
+
+            _collectableItemFactory = collectableItemFactory;
             _winMenuFactory = winMenuFactory;
             _failMenuFactory = failMenuFactory;
-    
+            _goalViewFactory = goalViewFactory;
+
             _goalsController.GotWin += OnWin;
             _collectController.GotLoss += OnLose;
+            _gameTimer.TimeIsOver += OnLose;
+
+            CurrentGameState = GameState.None;
+            
+            SetUpGoals();
         }
-    
-        public void SetUpItems(List<GoalSlot> goalSlots)
+
+        private void SetUpGoals()
         {
-            _goalSlots = goalSlots;
-            foreach (var goal in _goalSlots)
+
+            var shuffledList = _goalIcons
+                .OrderBy(icon => Guid.NewGuid())
+                .ToList();
+
+            for (int i = 0; i < _itemsToUseCount; i++)
             {
-                for (int i = 0; i < goal.GoalCount; ++i)
+                var sprite = shuffledList[i];
+                var goalCount = Random.Range(1, _maxCountModifier) * MatchCountMultiplier;
+                var newGoal = _goalViewFactory.Create(sprite, goalCount);
+                
+                _originalSprites.Add(sprite);
+                _originalCounts.Add(goalCount);
+
+                _spawnObjectList.Add(newGoal);
+            }
+            
+            SetUpItems();
+        }
+        
+        private void SetUpItems()
+        {
+            foreach (var element in _spawnObjectList)
+            {
+                for (int i = 0; i < element.GoalCount; ++i)
                 {
-                    _itemControllerFactory.Create(goal.name, _spawnFieldTransform.transform);
+                    var item = _collectableItemFactory.Create(element.Id, _spawnFieldTransform.transform);
+                    _collectableItems.Add(item);
                 }
             }
+
+            CurrentGameState = GameState.Game;
+            _gameTimer.ResetTimer();
         }
-    
+
         private void OnWin()
         {
-            _winMenuFactory.Create(_mainCanvas.transform, 65f, 2);
+            CurrentGameState = GameState.Win;
+            _winMenuFactory.Create(_mainCanvas.transform, _gameTimer.GameTime, 2);
+            _goalsController.GotWin -= OnWin;
         }
-    
+
         private void OnLose()
         {
+            CurrentGameState = GameState.Lose;
             _failMenuFactory.Create(_mainCanvas.transform);
+            _collectController.GotLoss -= OnLose;
+            _gameTimer.TimeIsOver -= OnLose;
+        }
+
+        public void RemoveItem(CollectableItem itemToRemove)
+        {
+            _collectableItems.Remove(itemToRemove);
+        }
+
+        public void ReplayLevel()
+        {
+            _goalsController.ClearGoals();
+
+            ClearField();
+
+            ClearOldSpawnObjects();
+
+            _collectController.ClearSlots();
+            
+            SpawnSameItems();
+            SetUpItems();
+        }
+
+        private void ClearOldSpawnObjects()
+        {
+            foreach (var item in _spawnObjectList)
+            {
+                Destroy(item.gameObject);
+            }
+
+            _spawnObjectList.Clear();
+        }
+
+        private void SpawnSameItems()
+        {
+            for (int i = 0; i < _itemsToUseCount; i++)
+            {
+                var newGoal = _goalViewFactory.Create(_originalSprites[i], _originalCounts[i]);
+                _spawnObjectList.Add(newGoal);
+            }
+        }
+
+        private void ClearField()
+        {
+            foreach (var item in _collectableItems)
+            {
+                Destroy(item.gameObject);
+            }
+
+            _collectableItems.Clear();
+        }
+
+        public void LoadMainMenu()
+        {
+            _sceneNavigation.LoadMainMenu();
         }
     }
 }

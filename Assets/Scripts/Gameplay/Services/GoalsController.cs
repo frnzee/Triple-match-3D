@@ -1,127 +1,82 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using Zenject;
-using Random = UnityEngine.Random;
 using Gameplay.UI;
 
 namespace Gameplay.Services
 {
     public class GoalsController : MonoBehaviour
     {
-        private const int MaxCountModifier = 1;
-
-        [SerializeField] private List<Sprite> _goalIcons;
-
-        private readonly List<GoalSlot> _goals = new();
-        private readonly List<GoalSlot> _spawnObjectsList = new();
-
-        private GameManager _gameManager;
-        private GoalSlot.Factory _goalSlotFactory;
+        private SlotBar _slotBar;
 
         private int _currentIndex;
-        private int _goalsForTheWin;
-        private GoalSlot _goal;
+        private int _goalsToWin;
+
+        public List<GoalView> Goals { get; } = new();
 
         public event Action GotWin;
 
         [Inject]
-        public void Construct(GameManager gameManager, GoalSlot.Factory goalSlotFactory)
+        public void Construct(SlotBar slotBar)
         {
-            _gameManager = gameManager;
-            _goalSlotFactory = goalSlotFactory;
+            _slotBar = slotBar;
         }
 
-        private void Start()
+        public void AddGoal(GoalView newGoal)
         {
-            for (int i = 0; i < _goalIcons.Count; ++i)
+            if (Goals.Count <= _slotBar.SlotCount)
             {
-                var randomIndex = Random.Range(0, _goalIcons.Count);
-                var sprite = _goalIcons[randomIndex];
-
-                var newGoal = _goalSlotFactory.Create(sprite, transform, MaxCountModifier);
-
-                var isDuplicate = _goals.Any(existingGoal => existingGoal.Id == newGoal.Id);
-                if (isDuplicate)
-                {
-                    Destroy(newGoal.gameObject);
-                    i--;
-                }
-                else
-                {
-                    if (_goals.Count < 4)
-                    {
-                        newGoal.transform.SetParent(transform);
-                        _goals.Add(newGoal);
-                        _spawnObjectsList.Add(newGoal);
-                    }
-                    else
-                    {
-                        _spawnObjectsList.Add(newGoal);
-                    }
-                }
+                Goals.Add(newGoal);
+                newGoal.GotCollected += OnGotCollected;
+                return;
             }
-
-            _gameManager.SetUpItems(_spawnObjectsList);
-
-            foreach (var goal in _goals)
-            {
-                goal.InitializePosition();
-                goal.GotCollected += OnGotCollected;
-            }
-
-            _goalsForTheWin = _goals.Count;
+            
+            _slotBar.PlaceGoalsToSlots();
+            _goalsToWin = Goals.Count;
         }
 
         public void CheckGoalMatch(string itemName)
         {
-            for (var i = 0; i < _goals.Count; i++)
+            for (var i = 0; i < Goals.Count - 1; i++)
             {
-                var goal = _goals[i];
-                if (goal.GoalChild.name == itemName)
+                var goal = Goals[i].GetComponentInChildren<GoalView>();
+                if (goal.Id == itemName)
                 {
                     goal.DecreaseGoalCount();
                     _currentIndex = i;
-                    if (goal.GoalCount <= 0)
-                    {
-                        goal.GotCollected -= OnGotCollected;
-                        break;
-                    }
+                    break;
                 }
             }
         }
 
-        private void RemoveAndShiftGoals()
-        {
-            _goal = _goals[_currentIndex];
-            _goal.GoalDisable();
-
-            for (int i = _currentIndex; i < _goals.Count - 1; i++)
-            {
-                _goals[i].SetNewGoalChild(_goals[i + 1].GoalChild);
-            }
-
-            _goals[_goals.Count - 1].SetNewGoalChild(_goal.GoalChild);
-            
-            foreach (var goal in _goals)
-            {
-                Debug.Log(goal);
-                Debug.Log(goal.GoalChild);
-            }
-            Debug.Log("===============================");
-        }
-
         private void OnGotCollected()
         {
-            RemoveAndShiftGoals();
+            Goals[_currentIndex].GetComponentInChildren<GoalView>().GotCollected -= OnGotCollected;
+            
+            UpdateGoals();
 
-            _goalsForTheWin--;
-
-            if (_goalsForTheWin <= 0)
+            if (_goalsToWin <= 1)
             {
                 GotWin?.Invoke();
             }
+        }
+
+        private void UpdateGoals()
+        {
+            Destroy(Goals[_currentIndex].gameObject);
+            Goals.RemoveAt(_currentIndex);
+            _slotBar.PlaceGoalsToSlots();
+            _goalsToWin--;
+        }
+
+        public void ClearGoals()
+        {
+            foreach (var goal in Goals)
+            {
+                Destroy(goal.gameObject);
+            }
+            Goals.Clear();
         }
     }
 }
