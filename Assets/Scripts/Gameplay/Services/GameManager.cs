@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -5,6 +6,7 @@ using Zenject;
 using Gameplay.Views;
 using Gameplay.UI;
 using Services;
+using Random = UnityEngine.Random;
 
 namespace Gameplay.Services
 {
@@ -15,10 +17,12 @@ namespace Gameplay.Services
         [SerializeField] private GameObject _spawnFieldTransform;
         [SerializeField] private GameObject _mainCanvas;
         [SerializeField] private List<Sprite> _goalIcons;
+        [SerializeField] private List<Sprite> _goalIcons2;
+        [SerializeField] private List<Sprite> _goalIcons3;
         [SerializeField] private int _maxCountModifier;
 
         private readonly List<CollectableItem> _collectableItems = new();
-        private List<GoalView> _spawnObjectList = new();
+        private readonly List<GoalView> _spawnObjectList = new();
 
         private GoalsController _goalsController;
         private CollectController _collectController;
@@ -26,8 +30,8 @@ namespace Gameplay.Services
         
         private GameTimer _gameTimer;
         
-        private List<int> _originalCounts = new();
-        private List<Sprite> _originalSprites = new();
+        private readonly List<int> _originalCounts = new();
+        private readonly List<Sprite> _originalSprites = new();
 
         private GoalView.Factory _goalViewFactory;
         private CollectableItem.Factory _collectableItemFactory;
@@ -54,18 +58,20 @@ namespace Gameplay.Services
             _collectController.GotLoss += OnLose;
             _gameTimer.TimeIsOver += OnLose;
 
+            CurrentGameState = GameState.None;
             SetUpGoals();
         }
 
         private void SetUpGoals()
         {
-            var goalIndexes = Enumerable.Range(0, _goalIcons.Count).ToList();
-            goalIndexes.Shuffle();
 
-            for (int i = 0; i < _goalIcons.Count; i++)
+            var shuffledList = _goalIcons2
+                .OrderBy(icon => Guid.NewGuid())
+                .ToList();
+
+            for (int i = 0; i < shuffledList.Count; i++)
             {
-                var index = goalIndexes[i];
-                var sprite = _goalIcons[index];
+                var sprite = shuffledList[i];
                 var goalCount = Random.Range(1, _maxCountModifier) * MatchCountMultiplier;
                 var newGoal = _goalViewFactory.Create(sprite, goalCount);
                 
@@ -77,8 +83,7 @@ namespace Gameplay.Services
             
             SetUpItems();
         }
-
-
+        
         private void SetUpItems()
         {
             foreach (var element in _spawnObjectList)
@@ -116,29 +121,45 @@ namespace Gameplay.Services
 
         public void ReplayLevel()
         {
-            _goalsController.ClearGoalsForReplay();
+            _goalsController.ClearGoals();
 
-            foreach (var item in _collectableItems)
-            {
-                Destroy(item.gameObject);
-            }
-            _collectableItems.Clear();
+            ClearField();
 
+            ClearOldSpawnObjects();
+
+            _collectController.ClearSlots();
+            
+            SpawnSameItems();
+            SetUpItems();
+        }
+
+        private void ClearOldSpawnObjects()
+        {
             foreach (var item in _spawnObjectList)
             {
                 Destroy(item.gameObject);
             }
-            _spawnObjectList.Clear();
 
-            _collectController.ClearSlots();
-            
+            _spawnObjectList.Clear();
+        }
+
+        private void SpawnSameItems()
+        {
             for (int i = 0; i < _goalIcons.Count; i++)
             {
                 var newGoal = _goalViewFactory.Create(_originalSprites[i], _originalCounts[i]);
                 _spawnObjectList.Add(newGoal);
             }
-            
-            SetUpItems();
+        }
+
+        private void ClearField()
+        {
+            foreach (var item in _collectableItems)
+            {
+                Destroy(item.gameObject);
+            }
+
+            _collectableItems.Clear();
         }
 
         public void LoadMainMenu()

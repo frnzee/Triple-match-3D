@@ -7,9 +7,11 @@ namespace Gameplay.Services
 {
     public class GameTimer : MonoBehaviour
     {
+        private const float TotalTime = 300f;
+        private const float TimeDivider = 60f;
+
         [SerializeField] private TextMeshProUGUI _timerText;
 
-        private float _totalTime = 300f;
         private float _currentTime;
         public float GameTime => _currentTime;
         private GameManager _gameManager;
@@ -23,12 +25,12 @@ namespace Gameplay.Services
 
         private void Start()
         {
-            _currentTime = _totalTime;
+            _currentTime = TotalTime;
         }
 
         public void ResetTimer()
         {
-            _currentTime = _totalTime;
+            _currentTime = TotalTime;
         }
 
         private void Update()
@@ -37,10 +39,10 @@ namespace Gameplay.Services
             {
                 _currentTime -= Time.deltaTime;
 
-                int minutes = Mathf.FloorToInt(_currentTime / 60f);
-                int seconds = Mathf.FloorToInt(_currentTime % 60f);
+                int minutes = Mathf.FloorToInt(_currentTime / TimeDivider);
+                int seconds = Mathf.FloorToInt(_currentTime % TimeDivider);
 
-                string timeText = string.Format("{0:0}:{1:00}", minutes, seconds);
+                var timeText = $"{minutes:0}:{seconds:00}";
 
                 _timerText.text = timeText;
                 return;

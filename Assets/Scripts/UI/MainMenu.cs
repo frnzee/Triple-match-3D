@@ -2,22 +2,27 @@ using Services;
 using UnityEngine;
 using Zenject;
 
-public class MainMenu : MonoBehaviour
+namespace UI
 {
-    [SerializeField] private Transform _parentTransform;
-    private LevelItem.Factory _levelItemFactory;
-
-    [Inject]
-    public void Construct(LevelItem.Factory levelItemFactory)
+    public class MainMenu : MonoBehaviour
     {
-        _levelItemFactory = levelItemFactory;
-    }
+        private const int LevelsCount = 5;
+        
+        [SerializeField] private Transform _parentTransform;
+        private LevelItem.Factory _levelItemFactory;
 
-    private void Start()
-    {
-        for (int i = 1; i <= 5; i++)
+        [Inject]
+        public void Construct(LevelItem.Factory levelItemFactory)
         {
-            _levelItemFactory.Create(i, _parentTransform);
+            _levelItemFactory = levelItemFactory;
+        }
+
+        private void Start()
+        {
+            for (int i = 1; i <= LevelsCount; i++)
+            {
+                _levelItemFactory.Create(i, _parentTransform);
+            }
         }
     }
 }

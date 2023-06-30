@@ -1,32 +1,32 @@
 using UnityEngine;
 using TMPro;
 using Zenject;
-using Gameplay.Services;
 using Services;
 
 namespace Gameplay.Views
 {
     public class WinMenu : MonoBehaviour
     {
+        private const string ContinueButtonText = "Continue";
+        private const float TimeDivider = 60f;
+        
         [SerializeField] private TextMeshProUGUI _timeText;
         [SerializeField] private TextMeshProUGUI _buttonText;
         [SerializeField] private GameObject[] _stars;
 
-        private GameManager _gameManager;
         private SceneNavigation _sceneNavigation;
         private int _starsCount;
 
         [Inject]
-        public void Construct(Transform parentTransform, float timeSpent, int starsCount, GameManager gameManager, SceneNavigation sceneNavigation)
+        public void Construct(Transform parentTransform, float timeSpent, int starsCount, SceneNavigation sceneNavigation)
         {
-            _gameManager = gameManager;
             _sceneNavigation = sceneNavigation;
 
-            var minutes = Mathf.FloorToInt(timeSpent / 60f);
-            var seconds = Mathf.FloorToInt(timeSpent % 60f);
+            var minutes = Mathf.FloorToInt(timeSpent / TimeDivider);
+            var seconds = Mathf.FloorToInt(timeSpent % TimeDivider);
             
-            _timeText.text = string.Format("{0:0}:{1:00}", minutes, seconds);
-            _buttonText.text = "Continue";
+            _timeText.text = $"{minutes:0}:{seconds:00}";
+            _buttonText.text = ContinueButtonText;
             _starsCount = starsCount;
             transform.SetParent(parentTransform, false);
         }

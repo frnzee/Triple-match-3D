@@ -50,9 +50,14 @@ namespace Gameplay.Services
                 return true;
             }
     
+            ResetMovementState();
+            return false;
+        }
+
+        private void ResetMovementState()
+        {
             _elapsedTime = 0;
             _canMove = false;
-            return false;
         }
     }
 }

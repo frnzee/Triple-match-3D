@@ -17,7 +17,6 @@ namespace Gameplay.UI
         
         public string Id { get; private set; }
         public int GoalCount { get; private set; }
-        public Sprite GoalSprite => _image.sprite;
         public event Action GotCollected;
 
         [Inject]

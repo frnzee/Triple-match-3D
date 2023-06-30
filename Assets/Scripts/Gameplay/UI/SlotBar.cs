@@ -24,8 +24,6 @@ namespace Gameplay.UI
             {
                 var goal = _goalsController.Goals[i];
                 goal.transform.SetParent(_goalSlots[i].transform, false);
-                //goal.Init(_goalSlots[i].transform);
-                //goal.transform.localPosition = Vector3.zero;
                 goal.InitializePosition();
             }
         }

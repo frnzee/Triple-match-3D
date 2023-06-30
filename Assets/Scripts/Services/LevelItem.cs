@@ -22,7 +22,7 @@ namespace Services
         
         public void OnClick()
         {
-            _sceneNavigation.LoadLevel(_id);
+            SceneNavigation.LoadLevel(_id);
         }
 
         public class Factory : PlaceholderFactory<int, Transform, LevelItem>

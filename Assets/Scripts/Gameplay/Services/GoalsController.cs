@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using Zenject;
 using Gameplay.UI;
@@ -26,7 +25,7 @@ namespace Gameplay.Services
 
         public void AddGoal(GoalView newGoal)
         {
-            if (Goals.Count() <= _slotBar.SlotCount)
+            if (Goals.Count <= _slotBar.SlotCount)
             {
                 Goals.Add(newGoal);
                 newGoal.GotCollected += OnGotCollected;
@@ -34,12 +33,12 @@ namespace Gameplay.Services
             }
             
             _slotBar.PlaceGoalsToSlots();
-            _goalsToWin = Goals.Count();
+            _goalsToWin = Goals.Count;
         }
 
         public void CheckGoalMatch(string itemName)
         {
-            for (var i = 0; i < Goals.Count() - 1; i++)
+            for (var i = 0; i < Goals.Count - 1; i++)
             {
                 var goal = Goals[i].GetComponentInChildren<GoalView>();
                 if (goal.Id == itemName)
@@ -54,10 +53,8 @@ namespace Gameplay.Services
         private void OnGotCollected()
         {
             Goals[_currentIndex].GetComponentInChildren<GoalView>().GotCollected -= OnGotCollected;
-            Destroy(Goals[_currentIndex].gameObject);
-            Goals.RemoveAt(_currentIndex);
-            _slotBar.PlaceGoalsToSlots();
-            _goalsToWin--;
+            
+            UpdateGoals();
 
             if (_goalsToWin <= 1)
             {
@@ -65,7 +62,15 @@ namespace Gameplay.Services
             }
         }
 
-        public void ClearGoalsForReplay()
+        private void UpdateGoals()
+        {
+            Destroy(Goals[_currentIndex].gameObject);
+            Goals.RemoveAt(_currentIndex);
+            _slotBar.PlaceGoalsToSlots();
+            _goalsToWin--;
+        }
+
+        public void ClearGoals()
         {
             foreach (var goal in Goals)
             {

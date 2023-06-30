@@ -5,6 +5,7 @@ namespace Services
 {
     public class SceneNavigation
     {
+        private const string SceneNameTemplate = "Level ";
         private SceneNames _sceneNames;
 
         [Inject]
@@ -13,9 +14,9 @@ namespace Services
             _sceneNames = sceneNames;
         }
 
-        public void LoadLevel(int levelNumber)
+        public static void LoadLevel(int levelNumber)
         {
-            SceneManager.LoadScene("Level" + levelNumber);
+            SceneManager.LoadScene(SceneNameTemplate + levelNumber);
         }
 
         public void LoadMainMenu()
