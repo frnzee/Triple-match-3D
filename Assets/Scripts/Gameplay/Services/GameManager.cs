@@ -36,7 +36,8 @@ namespace Gameplay.Services
         private CollectableItem.Factory _collectableItemFactory;
         private WinMenu.Factory _winMenuFactory;
         private FailMenu.Factory _failMenuFactory;
-        
+
+        public List<CollectableItem> Items => _collectableItems;
         public GameState CurrentGameState { get; private set; }
 
         [Inject]
