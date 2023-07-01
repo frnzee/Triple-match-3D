@@ -64,48 +64,44 @@ namespace Gameplay.Services
 
         private int FindAvailableSpot(Sprite sprite)
         {
-            if (_items.Count != 0)
-            {
-                var itemCount = _items.Count;
-
-                for (var i = 0; i < itemCount; i++)
-                {
-                    var currentItem = _items[i];
-
-                    if (currentItem.transform.parent == null)
-                    {
-                        if (i >= 1 && _items[i - 1].Id == sprite.name)
-                        {
-                            return i;
-                        }
-
-                        if (!string.Equals(currentItem.Id, sprite.name))
-                        {
-                            return i;
-                        }
-                    }
-
-                    if (i < itemCount - 1 && currentItem.Id == sprite.name && _items[i + 1].Id == sprite.name)
-                    {
-                        ShiftItems(i + 1);
-                        _isMatched = true;
-                        return i + 2;
-                    }
-
-                    if (string.Equals(currentItem.Id, sprite.name))
-                    {
-                        ShiftItems(i);
-                        _isMatched = true;
-                        return i + 1;
-                    }
-                    
-                    _isMatched = false;
-                }
-            }
+            var itemCount = _items.Count;
             
-            _isMatched = false;
+            for (var i = 0; i < itemCount; i++)
+            {
+                var currentItem = _items[i];
 
-            return _items.Count;
+                if (currentItem.transform.parent == null)
+                {
+                    if (i >= 1 && _items[i - 1].Id == sprite.name)
+                    {
+                        return i;
+                    }
+
+                    if (!string.Equals(currentItem.Id, sprite.name))
+                    {
+                        return i;
+                    }
+                }
+
+                if (i < itemCount - 1 && currentItem.Id == sprite.name && _items[i + 1].Id == sprite.name)
+                {
+                    ShiftItems(i + 1);
+                    _isMatched = true;
+                    return i + 2;
+                }
+
+                if (string.Equals(currentItem.Id, sprite.name))
+                {
+                    ShiftItems(i);
+                    return i + 1;
+                }
+                    
+                _isMatched = false;
+            }
+    
+            _isMatched = false;
+            
+            return itemCount;
         }
 
         private int CheckForMatches(Sprite sprite)
@@ -146,7 +142,6 @@ namespace Gameplay.Services
                 item.GetComponent<MovingController>().Launch(parentTransform.position);
             }
         }
-
 
         private void ShiftItems(int index)
         {
