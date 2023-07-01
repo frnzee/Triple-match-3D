@@ -38,7 +38,7 @@ namespace Gameplay.Services
 
         public void OnPointerEnter(PointerEventData eventData)
         {
-            _audioManager.Play("ItemHover");
+            _audioManager.PlayItemHoverSound();
             _isHovering = true;
             HoverSize();
         }

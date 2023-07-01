@@ -5,7 +5,7 @@ using Zenject;
 
 namespace UI
 {
-    public class ButtonHoverDetector : MonoBehaviour, IPointerEnterHandler
+    public class ButtonClickDetector : MonoBehaviour, IPointerUpHandler
     {
         private AudioManager _audioManager;
         
@@ -15,9 +15,9 @@ namespace UI
             _audioManager = audioManager;
         }
         
-        public void OnPointerEnter(PointerEventData eventData)
+        public void OnPointerUp(PointerEventData eventData)
         {
-            _audioManager.PlayButtonHoverSound();
+            _audioManager.PlayButtonClickSound();
         }
     }
 }

@@ -59,7 +59,7 @@ MonoBehaviour:
     Pitch: 1
     Source: {fileID: 0}
   - AudioName: ButtonClick
-    Clip: {fileID: 8300000, guid: 67c93a72a0d0b114c911307576751683, type: 3}
+    Clip: {fileID: 8300000, guid: 27f6c529284058b4e952f07a46d72c2e, type: 3}
     Loop: 0
     Volume: 1
     Pitch: 1
@@ -82,7 +82,7 @@ MonoBehaviour:
     Volume: 1
     Pitch: 1.03
     Source: {fileID: 0}
-  - AudioName: GoalCompleted
+  - AudioName: GoalCollected
     Clip: {fileID: 8300000, guid: 06334039c81ffa8488c3bfdf6b5c9c76, type: 3}
     Loop: 0
     Volume: 1

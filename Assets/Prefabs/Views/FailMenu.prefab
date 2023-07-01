@@ -495,6 +495,7 @@ GameObject:
   - component: {fileID: 4986736977629327423}
   - component: {fileID: 3110307313221853875}
   - component: {fileID: 2590414651621160313}
+  - component: {fileID: 5728510304041803189}
   m_Layer: 5
   m_Name: Continue
   m_TagString: Untagged
@@ -629,6 +630,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a8c35eae999748cf9c71da4449846936, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &5728510304041803189
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3076161943748225145}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 82ded5fec3934566a3edbe0a9f07a7a7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &3416905910657931094
 GameObject:
   m_ObjectHideFlags: 0
@@ -723,6 +736,7 @@ GameObject:
   - component: {fileID: 3555660466216391098}
   - component: {fileID: 1150659645497926957}
   - component: {fileID: 8058238637787408673}
+  - component: {fileID: 271868767532480413}
   m_Layer: 5
   m_Name: Replay
   m_TagString: Untagged
@@ -855,6 +869,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a8c35eae999748cf9c71da4449846936, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &271868767532480413
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3593243332849586748}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 82ded5fec3934566a3edbe0a9f07a7a7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &4441475717401247987

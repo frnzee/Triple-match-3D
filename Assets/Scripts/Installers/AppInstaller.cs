@@ -11,17 +11,8 @@ namespace Installers
 
         public override void InstallBindings()
         {
-            BindScenes();
             BinsSceneNavigation();
             BindAudio();
-        }
-        
-        private void BindScenes()
-        {
-            Container.Bind<SceneNames>()
-                .FromNew()
-                .AsSingle()
-                .Lazy();
         }
 
         private void BinsSceneNavigation()

@@ -21,6 +21,8 @@ namespace Installers
         [SerializeField] private GameObject _itemPrefab;
         [SerializeField] private GameObject _collectedItemPrefab;
         [SerializeField] private GameObject _goalSlotPrefab;
+
+        [Header("Menus")]
         [SerializeField] private GameObject _winMenuPrefab;
         [SerializeField] private GameObject _failMenuPrefab;
 
@@ -30,6 +32,7 @@ namespace Installers
         {
             BindFactories();
             BindControllers();
+            BindMenus();
             BindBoosters();
         }
 
@@ -83,7 +86,10 @@ namespace Installers
                 .FromComponentInNewPrefab(_collectedItemPrefab)
                 .AsSingle()
                 .Lazy();
+        }
 
+        private void BindMenus()
+        {
             Container.BindFactory<Transform, float, int, WinMenu, WinMenu.Factory>()
                 .FromComponentInNewPrefab(_winMenuPrefab)
                 .AsSingle()

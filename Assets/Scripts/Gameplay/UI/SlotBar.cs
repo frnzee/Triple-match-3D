@@ -20,7 +20,7 @@ namespace Gameplay.UI
 
         public void PlaceGoalsToSlots()
         {
-            for (int i = 0; i < _goalsController.Goals.Count - 1; i++)
+            for (var i = 0; i < _goalsController.Goals.Count - 1; i++)
             {
                 var goal = _goalsController.Goals[i];
                 goal.transform.SetParent(_goalSlots[i].transform, false);

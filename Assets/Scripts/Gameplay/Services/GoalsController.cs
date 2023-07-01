@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using Zenject;
 using Gameplay.UI;
-using Services.Audio;
 
 namespace Gameplay.Services
 {
@@ -16,7 +15,7 @@ namespace Gameplay.Services
         
         public List<GoalView> Goals { get; } = new();
 
-        public event Action GotWin;
+        public event Action Won;
 
         [Inject]
         public void Construct(SlotBar slotBar)
@@ -29,7 +28,7 @@ namespace Gameplay.Services
             if (Goals.Count <= _slotBar.SlotCount)
             {
                 Goals.Add(newGoal);
-                newGoal.GotCollected += OnGotCollected;
+                newGoal.Collected += OnCollected;
                 return;
             }
             
@@ -42,6 +41,7 @@ namespace Gameplay.Services
             for (var i = 0; i < Goals.Count - 1; i++)
             {
                 var goal = Goals[i].GetComponentInChildren<GoalView>();
+                
                 if (goal.Id == itemName)
                 {
                     goal.DecreaseGoalCount();
@@ -51,15 +51,15 @@ namespace Gameplay.Services
             }
         }
 
-        private void OnGotCollected()
+        private void OnCollected()
         {
-            Goals[_currentIndex].GetComponentInChildren<GoalView>().GotCollected -= OnGotCollected;
+            Goals[_currentIndex].GetComponentInChildren<GoalView>().Collected -= OnCollected;
             
             UpdateGoals();
 
             if (_goalsToWin <= 1)
             {
-                GotWin?.Invoke();
+                Won?.Invoke();
             }
         }
 

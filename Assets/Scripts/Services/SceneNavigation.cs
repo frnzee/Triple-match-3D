@@ -1,4 +1,3 @@
-using Zenject;
 using UnityEngine.SceneManagement;
 
 namespace Services
@@ -6,22 +5,16 @@ namespace Services
     public class SceneNavigation
     {
         private const string SceneNameTemplate = "Level ";
-        private SceneNames _sceneNames;
-
-        [Inject]
-        public void Construct(SceneNames sceneNames)
-        {
-            _sceneNames = sceneNames;
-        }
+        private const string MainMenu = "MainMenu";
 
         public static void LoadLevel(int levelNumber)
         {
             SceneManager.LoadScene(SceneNameTemplate + levelNumber);
         }
 
-        public void LoadMainMenu()
+        public static void LoadMainMenu()
         {
-            SceneManager.LoadScene(_sceneNames.MainMenu);
+            SceneManager.LoadScene(MainMenu);
         }
     }
 }

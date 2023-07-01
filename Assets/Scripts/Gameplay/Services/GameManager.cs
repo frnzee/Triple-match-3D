@@ -21,12 +21,10 @@ namespace Gameplay.Services
         [SerializeField] private int _maxCountModifier;
         [SerializeField] private int _itemsToUseCount;
 
-        private readonly List<CollectableItem> _collectableItems = new();
         private readonly List<GoalView> _spawnObjectList = new();
 
         private GoalsController _goalsController;
         private CollectController _collectController;
-        private SceneNavigation _sceneNavigation;
         private AudioManager _audioManager;
         
         private GameTimer _gameTimer;
@@ -39,15 +37,15 @@ namespace Gameplay.Services
         private WinMenu.Factory _winMenuFactory;
         private FailMenu.Factory _failMenuFactory;
 
-        public List<CollectableItem> Items => _collectableItems;
+        public List<CollectableItem> Items { get; } = new();
+
         public GameState CurrentGameState { get; private set; }
 
         [Inject]
         public void Construct(CollectableItem.Factory collectableItemFactory, CollectController collectController,
             GoalsController goalsController, GameTimer gameTimer, WinMenu.Factory winMenuFactory,
-            FailMenu.Factory failMenuFactory, GoalView.Factory goalViewFactory, SceneNavigation sceneNavigation, AudioManager audioManager)
+            FailMenu.Factory failMenuFactory, GoalView.Factory goalViewFactory, AudioManager audioManager)
         {
-            _sceneNavigation = sceneNavigation;
             _goalsController = goalsController;
             _collectController = collectController;
             _gameTimer = gameTimer;
@@ -58,8 +56,8 @@ namespace Gameplay.Services
             _failMenuFactory = failMenuFactory;
             _goalViewFactory = goalViewFactory;
 
-            _goalsController.GotWin += OnWin;
-            _collectController.GotLoss += OnLose;
+            _goalsController.Won += OnWon;
+            _collectController.Loss += OnLose;
             _gameTimer.TimeIsOver += OnLose;
 
             CurrentGameState = GameState.None;
@@ -74,7 +72,7 @@ namespace Gameplay.Services
                 .OrderBy(icon => Guid.NewGuid())
                 .ToList();
 
-            for (int i = 0; i < _itemsToUseCount; i++)
+            for (var i = 0; i < _itemsToUseCount; i++)
             {
                 var sprite = shuffledList[i];
                 var goalCount = Random.Range(1, _maxCountModifier) * MatchCountMultiplier;
@@ -82,7 +80,6 @@ namespace Gameplay.Services
                 
                 _originalSprites.Add(sprite);
                 _originalCounts.Add(goalCount);
-
                 _spawnObjectList.Add(newGoal);
             }
             
@@ -93,10 +90,10 @@ namespace Gameplay.Services
         {
             foreach (var element in _spawnObjectList)
             {
-                for (int i = 0; i < element.GoalCount; ++i)
+                for (var i = 0; i < element.GoalCount; ++i)
                 {
                     var item = _collectableItemFactory.Create(element.Id, _spawnFieldTransform.transform);
-                    _collectableItems.Add(item);
+                    Items.Add(item);
                 }
             }
 
@@ -104,26 +101,26 @@ namespace Gameplay.Services
             _gameTimer.ResetTimer();
         }
 
-        private void OnWin()
+        private void OnWon()
         {
-            _audioManager.Play("Win");
+            _audioManager.PlayWinSound();
             CurrentGameState = GameState.Win;
             _winMenuFactory.Create(_mainCanvas.transform, _gameTimer.GameTime, 2);
-            _goalsController.GotWin -= OnWin;
+            _goalsController.Won -= OnWon;
         }
 
         private void OnLose()
         {
-            _audioManager.Play("Loss");
+            _audioManager.PlayLoseSound();
             CurrentGameState = GameState.Lose;
             _failMenuFactory.Create(_mainCanvas.transform);
-            _collectController.GotLoss -= OnLose;
+            _collectController.Loss -= OnLose;
             _gameTimer.TimeIsOver -= OnLose;
         }
 
         public void RemoveItem(CollectableItem itemToRemove)
         {
-            _collectableItems.Remove(itemToRemove);
+            Items.Remove(itemToRemove);
         }
 
         public void ReplayLevel()
@@ -152,7 +149,7 @@ namespace Gameplay.Services
 
         private void SpawnSameItems()
         {
-            for (int i = 0; i < _itemsToUseCount; i++)
+            for (var i = 0; i < _itemsToUseCount; i++)
             {
                 var newGoal = _goalViewFactory.Create(_originalSprites[i], _originalCounts[i]);
                 _spawnObjectList.Add(newGoal);
@@ -161,18 +158,17 @@ namespace Gameplay.Services
 
         private void ClearField()
         {
-            foreach (var item in _collectableItems)
+            foreach (var item in Items)
             {
                 Destroy(item.gameObject);
             }
 
-            _collectableItems.Clear();
+            Items.Clear();
         }
 
         public void LoadMainMenu()
         {
-            _audioManager.Play("ButtonClick");
-            _sceneNavigation.LoadMainMenu();
+            SceneNavigation.LoadMainMenu();
         }
     }
 }

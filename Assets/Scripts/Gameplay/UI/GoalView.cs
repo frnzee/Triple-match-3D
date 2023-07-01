@@ -19,7 +19,7 @@ namespace Gameplay.UI
         
         public string Id { get; private set; }
         public int GoalCount { get; private set; }
-        public event Action GotCollected;
+        public event Action Collected;
 
         [Inject]
         public void Construct(Sprite sprite, int goalCount, GoalsController goalsController, AudioManager audioManager)
@@ -54,8 +54,8 @@ namespace Gameplay.UI
 
             if (GoalCount <= 0)
             {
-                _audioManager.Play("GoalCompleted");
-                GotCollected?.Invoke();
+                _audioManager.PlayGoalSound();
+                Collected?.Invoke();
             }
         }
 

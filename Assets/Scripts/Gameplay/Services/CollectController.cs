@@ -4,7 +4,6 @@ using UnityEngine;
 using Zenject;
 using Gameplay.UI;
 using Services.Audio;
-using TMPro;
 
 namespace Gameplay.Services
 {
@@ -18,8 +17,9 @@ namespace Gameplay.Services
         private AudioManager _audioManager;
 
         private int _currentIndex;
+        private bool _isMatched;
 
-        public event Action GotLoss;
+        public event Action Loss;
 
         [Inject]
         public void Construct(CollectedItem.Factory collectedItemFactory, GoalsController goalsController, AudioManager audioManager)
@@ -31,34 +31,34 @@ namespace Gameplay.Services
 
         public void CollectItem(Vector3 itemPosition, Sprite itemIcon)
         {
-            if (_items.Count < _itemsBases.Count)
+            if (_items.Count >= _itemsBases.Count)
             {
-                var availableIndex = FindAvailableSpot(itemIcon);
+                return;
+            }
+            
+            var availableIndex = FindAvailableSpot(itemIcon);
+            var collectedItem = _collectedItemsFactory.Create(itemPosition, _itemsBases[availableIndex].transform, itemIcon);
 
-                var collectedItem = _collectedItemsFactory.Create(itemPosition, _itemsBases[availableIndex].transform, itemIcon);
+            _goalsController.CheckGoalMatch(itemIcon.name);
+            _items.Insert(availableIndex, collectedItem);
 
-                _goalsController.CheckGoalMatch(itemIcon.name);
-
-                _items.Insert(availableIndex, collectedItem);
-
-                var matchIndex = CheckForMatches(itemIcon);
-                if (matchIndex >= 0)
-                {
-                    _currentIndex = matchIndex;
-                    collectedItem.GetComponent<MovingController>().ReachedFinalPosition += OnReachedFinalPosition;
-                }
-                else
-                {
-                    collectedItem.GetComponent<MovingController>().ReachedFinalPosition += OnReachedFinalPositionCheckForLoss;
-                }
+            var matchIndex = CheckForMatches(itemIcon);
+            if (matchIndex >= 0)
+            {
+                _currentIndex = matchIndex;
+                collectedItem.GetComponent<MovingController>().ReachedFinalPosition += OnReachedFinalPosition;
+            }
+            else
+            {
+                collectedItem.GetComponent<MovingController>().ReachedFinalPosition += OnReachedFinalPositionCheckForLoss;
             }
         }
 
         private void OnReachedFinalPositionCheckForLoss()
         {
-            if (_items.Count == _itemsBases.Count)
+            if (_items.Count == _itemsBases.Count && !_isMatched)
             {
-                GotLoss?.Invoke();
+                Loss?.Invoke();
             }
         }
 
@@ -66,9 +66,9 @@ namespace Gameplay.Services
         {
             if (_items.Count != 0)
             {
-                int itemCount = _items.Count;
+                var itemCount = _items.Count;
 
-                for (int i = 0; i < itemCount; i++)
+                for (var i = 0; i < itemCount; i++)
                 {
                     var currentItem = _items[i];
 
@@ -79,7 +79,7 @@ namespace Gameplay.Services
                             return i;
                         }
 
-                        if (currentItem.Id != sprite.name)
+                        if (!string.Equals(currentItem.Id, sprite.name))
                         {
                             return i;
                         }
@@ -88,23 +88,29 @@ namespace Gameplay.Services
                     if (i < itemCount - 1 && currentItem.Id == sprite.name && _items[i + 1].Id == sprite.name)
                     {
                         ShiftItems(i + 1);
+                        _isMatched = true;
                         return i + 2;
                     }
 
-                    if (currentItem.Id == sprite.name)
+                    if (string.Equals(currentItem.Id, sprite.name))
                     {
                         ShiftItems(i);
+                        _isMatched = true;
                         return i + 1;
                     }
+                    
+                    _isMatched = false;
                 }
             }
+            
+            _isMatched = false;
 
             return _items.Count;
         }
 
         private int CheckForMatches(Sprite sprite)
         {
-            for (int i = 0; i < _items.Count - 2; i++)
+            for (var i = 0; i < _items.Count - 2; i++)
             {
                 if (_items[i].Id == sprite.name && _items[i + 1].Id == sprite.name && _items[i + 2].Id == sprite.name)
                 {
@@ -117,8 +123,8 @@ namespace Gameplay.Services
 
         private void RemoveAndShiftItems()
         {
-            _audioManager.Play("3ItemsMatch");
-            int itemCount = _items.Count;
+            _audioManager.PlayThreeCollectedSound();
+            var itemCount = _items.Count;
 
             if (_currentIndex >= 0 && _currentIndex + 2 < itemCount)
             {
@@ -129,27 +135,33 @@ namespace Gameplay.Services
                 }
             }
 
-            for (int i = 0; i < _items.Count; ++i)
+            for (var i = 0; i < _items.Count; ++i)
             {
                 var item = _items[i];
                 var parentTransform = _itemsBases[i].transform;
                 item.transform.SetParent(parentTransform);
+
+                item.transform.SetSiblingIndex(i);
+
                 item.GetComponent<MovingController>().Launch(parentTransform.position);
             }
         }
 
+
         private void ShiftItems(int index)
         {
-            if (_items.Count < _itemsBases.Count)
+            if (_items.Count >= _itemsBases.Count)
             {
-                for (int i = _items.Count - 1; i > index; --i)
-                {
-                    var item = _items[i];
-                    var targetIndex = i + 1;
-                    var parentTransform = _itemsBases[targetIndex].transform;
-                    item.transform.SetParent(parentTransform);
-                    item.GetComponent<MovingController>().Launch(parentTransform.position);
-                }
+                return;
+            }
+            
+            for (var i = _items.Count - 1; i > index; --i)
+            {
+                var item = _items[i];
+                var targetIndex = i + 1;
+                var parentTransform = _itemsBases[targetIndex].transform;
+                item.GetComponent<MovingController>().Launch(parentTransform.position);
+                item.transform.SetParent(parentTransform);
             }
         }
 

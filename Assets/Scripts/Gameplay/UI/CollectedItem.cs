@@ -16,7 +16,11 @@ namespace Gameplay.UI
             transform.position = initialPosition;
             transform.SetParent(targetTransform);
             GetComponent<Image>().sprite = itemSprite;
-            GetComponent<MovingController>().Launch(targetTransform.position);
+        }
+
+        private void Start()
+        {
+            GetComponent<MovingController>().Launch(transform.parent.position);
         }
 
         public class Factory : PlaceholderFactory<Vector3, Transform, Sprite, CollectedItem>

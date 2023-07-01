@@ -1,33 +1,92 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
+using System.Collections.Generic;
 
 namespace Services.Audio
 {
     public class AudioManager : MonoBehaviour
     {
+        private Dictionary<string, AudioSource> _soundDictionary = new();
+
         [SerializeField] private SoundClip[] _soundClips;
 
         private void Awake()
         {
             foreach (var sound in _soundClips)
             {
-                sound.Source = gameObject.AddComponent<AudioSource>();
-                sound.Source.clip = sound.Clip;
-                sound.Source.volume = sound.Volume;
-                sound.Source.pitch = sound.Pitch;
-                sound.Source.loop = sound.Loop;
+                var source = gameObject.AddComponent<AudioSource>();
+                source.clip = sound.Clip;
+                source.volume = sound.Volume;
+                source.pitch = sound.Pitch;
+                source.loop = sound.Loop;
+                _soundDictionary[sound.AudioName] = source;
             }
         }
 
         private void Start()
         {
-            Play("MainTheme");
+            PlayMainTheme();
         }
 
         public void Play(string soundName)
         {
-            var sound = Array.Find(_soundClips, sound => sound.AudioName == soundName);
-            sound.Source.Play();
+            if (_soundDictionary.TryGetValue(soundName, out var sound))
+            {
+                sound.Play();
+            }
+            else
+            {
+                Debug.LogWarning("Sound with name " + soundName + " does not exist.");
+            }
+        }
+
+        private void PlayMainTheme()
+        {
+            _soundDictionary["MainTheme"].Play();
+        }
+        
+        public void PlayButtonClickSound()
+        {
+            _soundDictionary["ButtonClick"].Play();
+        }
+
+        public void PlayButtonHoverSound()
+        {
+            _soundDictionary["ButtonHover"].Play();
+        }
+
+        public void PlayItemClickSound()
+        {
+            _soundDictionary["ItemClick"].Play();
+        }
+
+        public void PlayItemHoverSound()
+        {
+            _soundDictionary["ItemHover"].Play();
+        }
+
+        public void PlayThreeCollectedSound()
+        {
+            _soundDictionary["3ItemsMatch"].Play();
+        }
+
+        public void PlayWinSound()
+        {
+            _soundDictionary["Win"].Play();
+        }
+
+        public void PlayLoseSound()
+        {
+            _soundDictionary["Loss"].Play();
+        }
+        
+        public void PlayGoalSound()
+        {
+            _soundDictionary["GoalCollected"].Play();
+        }
+
+        public void PlayFanSound()
+        {
+            _soundDictionary["Fan"].Play();
         }
     }
 }

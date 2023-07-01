@@ -13,8 +13,9 @@ namespace Gameplay.Services
         [SerializeField] private TextMeshProUGUI _timerText;
 
         private float _currentTime;
-        public float GameTime => _currentTime;
         private GameManager _gameManager;
+
+        public float GameTime => _currentTime;
         public event Action TimeIsOver;
 
         [Inject]
@@ -39,8 +40,8 @@ namespace Gameplay.Services
             {
                 _currentTime -= Time.deltaTime;
 
-                int minutes = Mathf.FloorToInt(_currentTime / TimeDivider);
-                int seconds = Mathf.FloorToInt(_currentTime % TimeDivider);
+                var minutes = Mathf.FloorToInt(_currentTime / TimeDivider);
+                var seconds = Mathf.FloorToInt(_currentTime % TimeDivider);
 
                 var timeText = $"{minutes:0}:{seconds:00}";
 

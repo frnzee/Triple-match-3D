@@ -5,9 +5,10 @@ namespace Gameplay.Services
 {
     public class MovingController : MonoBehaviour
     {
+        private const float DesiredTime = 1f;
+
         [SerializeField] private AnimationCurve _curve;
-    
-        private readonly float _desiredTime = 1f;
+
         private Transform _startingPosition;
         private Vector3 _finalPosition;
         private float _elapsedTime;
@@ -41,11 +42,11 @@ namespace Gameplay.Services
         {
             _elapsedTime += Time.deltaTime;
     
-            var percentageComplete = _elapsedTime / _desiredTime;
+            var percentageComplete = _elapsedTime / DesiredTime;
             transform.position =
                 Vector3.Lerp(_startingPosition.position, _finalPosition, _curve.Evaluate(percentageComplete));
     
-            if (!(_elapsedTime >= _desiredTime) && transform.position != _finalPosition)
+            if (!(_elapsedTime >= DesiredTime) && transform.position != _finalPosition)
             {
                 return true;
             }
