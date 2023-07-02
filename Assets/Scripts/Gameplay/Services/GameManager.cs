@@ -79,7 +79,7 @@ namespace Gameplay.Services
                 return;
             }
             
-            var scaleFactor = new Vector3(TargetAspectRatio / currentAspectRatio, 1f, 1f);
+            var scaleFactor = new Vector3(TargetAspectRatio / currentAspectRatio, 1f, TargetAspectRatio / currentAspectRatio);
             _worldRoot.localScale = Vector3.Scale(_worldRoot.localScale, scaleFactor);
         }
 
