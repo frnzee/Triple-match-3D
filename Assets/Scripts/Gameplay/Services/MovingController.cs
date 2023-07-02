@@ -5,7 +5,7 @@ namespace Gameplay.Services
 {
     public class MovingController : MonoBehaviour
     {
-        private const float DesiredTime = 1f;
+        private const float DesiredTime = 0.5f;
 
         [SerializeField] private AnimationCurve _curve;
 

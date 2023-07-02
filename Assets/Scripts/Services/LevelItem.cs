@@ -7,6 +7,7 @@ namespace Services
     public class LevelItem : MonoBehaviour
     {
         [SerializeField] private TextMeshProUGUI _levelButtonText;
+        
         private int _id;
         private string _currentLevel;
      
@@ -16,6 +17,7 @@ namespace Services
             _id = levelNumber;
             _levelButtonText.text = "Level " + levelNumber;
             transform.SetParent(parentTransform);
+            transform.localScale = new Vector3(1f, 1f, 1f);
         }
         
         public void OnClick()

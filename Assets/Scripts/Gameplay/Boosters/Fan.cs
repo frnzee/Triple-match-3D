@@ -9,7 +9,7 @@ namespace Gameplay.Boosters
     {
         private const float Lifetime = 1f;
         
-        [SerializeField] private float _fanForce = 10f;
+        [SerializeField] private float _fanForce = 250f;
         
         private GameManager _gameManager;
         private AudioManager _audioManager;
@@ -25,15 +25,19 @@ namespace Gameplay.Boosters
         {
             _audioManager.PlayFanSound();
             
+            ShakeItems();
+            
+            Destroy(gameObject, Lifetime);
+        }
+
+        private void ShakeItems()
+        {
             foreach (var item in _gameManager.Items)
             {
                 var otherRigidbody = item.GetComponent<Rigidbody>();
                 var fanDirection = Vector3.up;
                 otherRigidbody.AddForce(fanDirection * _fanForce, ForceMode.Force);
             }
-            
-            Destroy(gameObject, Lifetime);
-
         }
 
         public class Factory : PlaceholderFactory<Fan>

@@ -5,7 +5,7 @@ namespace Services.Audio
 {
     public class AudioManager : MonoBehaviour
     {
-        private Dictionary<string, AudioSource> _soundDictionary = new();
+        private readonly Dictionary<string, AudioSource> _soundDictionary = new();
 
         [SerializeField] private SoundClip[] _soundClips;
 

@@ -7,8 +7,9 @@ namespace UI
     public class MainMenu : MonoBehaviour
     {
         private const int LevelsCount = 5;
-        
+
         [SerializeField] private Transform _parentTransform;
+
         private LevelItem.Factory _levelItemFactory;
 
         [Inject]
@@ -16,10 +17,10 @@ namespace UI
         {
             _levelItemFactory = levelItemFactory;
         }
-
+        
         private void Start()
         {
-            for (int i = 1; i <= LevelsCount; i++)
+            for (var i = 1; i <= LevelsCount; i++)
             {
                 _levelItemFactory.Create(i, _parentTransform);
             }

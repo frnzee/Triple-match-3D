@@ -37,11 +37,6 @@ namespace Gameplay.UI
             _goalsController.AddGoal(this);
         }
         
-        public void InitializePosition()
-        {
-            GetComponent<MovingController>().Launch(transform.parent.position);
-        }
-
         public void DecreaseGoalCount()
         {
             ApplyGoal();

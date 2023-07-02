@@ -12,10 +12,10 @@ namespace Services.Audio
         public bool Loop;
 
         [Range(0, 1f)] 
-        public float Volume = 1;
+        public float Volume;
         
         [Range(.1f, 3f)]
-        public float Pitch = 1;
+        public float Pitch;
 
         [HideInInspector]
         public AudioSource Source;

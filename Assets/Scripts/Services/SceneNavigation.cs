@@ -12,7 +12,7 @@ namespace Services
             SceneManager.LoadScene(SceneNameTemplate + levelNumber);
         }
 
-        public static void LoadMainMenu()
+        public void LoadMainMenu()
         {
             SceneManager.LoadScene(MainMenu);
         }

@@ -16,6 +16,7 @@ namespace Gameplay.UI
             transform.position = initialPosition;
             transform.SetParent(targetTransform);
             GetComponent<Image>().sprite = itemSprite;
+            transform.localScale = new Vector3(1f, 1f, 1f);
         }
 
         private void Start()

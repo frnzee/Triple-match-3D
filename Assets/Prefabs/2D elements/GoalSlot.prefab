@@ -329,7 +329,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _image: {fileID: 4993506123190548199}
   _goalCountText: {fileID: 7405317407016662845}
-  _goalChild: {fileID: 3699154342948938677}
 --- !u!1 &5181062030698467926
 GameObject:
   m_ObjectHideFlags: 0

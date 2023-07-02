@@ -12,7 +12,7 @@ namespace Gameplay
 {
     public class CollectableItem : MonoBehaviour, IPointerUpHandler
     {
-        private const float HorizontalRandomModifier = 2.5f;
+        private const float HorizontalRandomModifier = 1.8f;
         private const float MinVerticalRandomModifier = 0.5f;
         private const float VerticalRandomModifier = 1.5f;
         

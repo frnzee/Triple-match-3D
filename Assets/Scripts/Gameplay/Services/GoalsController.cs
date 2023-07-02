@@ -14,8 +14,7 @@ namespace Gameplay.Services
         private int _goalsToWin;
         
         public List<GoalView> Goals { get; } = new();
-
-        public event Action Won;
+        public event Action Win;
 
         [Inject]
         public void Construct(SlotBar slotBar)
@@ -59,7 +58,7 @@ namespace Gameplay.Services
 
             if (_goalsToWin <= 1)
             {
-                Won?.Invoke();
+                Win?.Invoke();
             }
         }
 
@@ -77,6 +76,7 @@ namespace Gameplay.Services
             {
                 Destroy(goal.gameObject);
             }
+            
             Goals.Clear();
         }
     }

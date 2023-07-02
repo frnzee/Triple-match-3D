@@ -14,18 +14,21 @@ namespace Gameplay.Services
     public class GameManager : MonoBehaviour
     {
         private const int MatchCountMultiplier = 3;
+        private const float TargetAspectRatio = 9f / 16f;
         
         [SerializeField] private GameObject _spawnFieldTransform;
         [SerializeField] private GameObject _mainCanvas;
         [SerializeField] private List<Sprite> _goalIcons;
         [SerializeField] private int _maxCountModifier;
         [SerializeField] private int _itemsToUseCount;
+        [SerializeField] private Transform _worldRoot;
 
         private readonly List<GoalView> _spawnObjectList = new();
 
         private GoalsController _goalsController;
         private CollectController _collectController;
         private AudioManager _audioManager;
+        private SceneNavigation _sceneNavigation;
         
         private GameTimer _gameTimer;
         
@@ -37,6 +40,7 @@ namespace Gameplay.Services
         private WinMenu.Factory _winMenuFactory;
         private FailMenu.Factory _failMenuFactory;
 
+
         public List<CollectableItem> Items { get; } = new();
 
         public GameState CurrentGameState { get; private set; }
@@ -44,19 +48,20 @@ namespace Gameplay.Services
         [Inject]
         public void Construct(CollectableItem.Factory collectableItemFactory, CollectController collectController,
             GoalsController goalsController, GameTimer gameTimer, WinMenu.Factory winMenuFactory,
-            FailMenu.Factory failMenuFactory, GoalView.Factory goalViewFactory, AudioManager audioManager)
+            FailMenu.Factory failMenuFactory, GoalView.Factory goalViewFactory, AudioManager audioManager, SceneNavigation sceneNavigation)
         {
             _goalsController = goalsController;
             _collectController = collectController;
             _gameTimer = gameTimer;
             _audioManager = audioManager;
+            _sceneNavigation = sceneNavigation;
 
             _collectableItemFactory = collectableItemFactory;
             _winMenuFactory = winMenuFactory;
             _failMenuFactory = failMenuFactory;
             _goalViewFactory = goalViewFactory;
 
-            _goalsController.Won += OnWon;
+            _goalsController.Win += OnWin;
             _collectController.Loss += OnLose;
             _gameTimer.TimeIsOver += OnLose;
 
@@ -65,9 +70,21 @@ namespace Gameplay.Services
             SetUpGoals();
         }
 
+        private void Start()
+        {
+            var currentAspectRatio = (float)Screen.width / Screen.height;
+
+            if (!(Mathf.Abs(currentAspectRatio - TargetAspectRatio) > 0.01f))
+            {
+                return;
+            }
+            
+            var scaleFactor = new Vector3(TargetAspectRatio / currentAspectRatio, 1f, 1f);
+            _worldRoot.localScale = Vector3.Scale(_worldRoot.localScale, scaleFactor);
+        }
+
         private void SetUpGoals()
         {
-
             var shuffledList = _goalIcons
                 .OrderBy(icon => Guid.NewGuid())
                 .ToList();
@@ -101,12 +118,12 @@ namespace Gameplay.Services
             _gameTimer.ResetTimer();
         }
 
-        private void OnWon()
+        private void OnWin()
         {
             _audioManager.PlayWinSound();
             CurrentGameState = GameState.Win;
-            _winMenuFactory.Create(_mainCanvas.transform, _gameTimer.GameTime, 2);
-            _goalsController.Won -= OnWon;
+            _winMenuFactory.Create(_mainCanvas.transform, _gameTimer.GameTime);
+            _goalsController.Win -= OnWin;
         }
 
         private void OnLose()
@@ -168,7 +185,7 @@ namespace Gameplay.Services
 
         public void LoadMainMenu()
         {
-            SceneNavigation.LoadMainMenu();
+            _sceneNavigation.LoadMainMenu();
         }
     }
 }

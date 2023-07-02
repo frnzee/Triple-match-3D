@@ -90,7 +90,7 @@ namespace Installers
 
         private void BindMenus()
         {
-            Container.BindFactory<Transform, float, int, WinMenu, WinMenu.Factory>()
+            Container.BindFactory<Transform, float, WinMenu, WinMenu.Factory>()
                 .FromComponentInNewPrefab(_winMenuPrefab)
                 .AsSingle()
                 .Lazy();

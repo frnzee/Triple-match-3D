@@ -12,13 +12,11 @@ namespace Gameplay.Views
         
         [SerializeField] private TextMeshProUGUI _timeText;
         [SerializeField] private TextMeshProUGUI _buttonText;
-        [SerializeField] private GameObject[] _stars;
 
         private SceneNavigation _sceneNavigation;
-        private int _starsCount;
 
         [Inject]
-        public void Construct(Transform parentTransform, float timeSpent, int starsCount, SceneNavigation sceneNavigation)
+        public void Construct(Transform parentTransform, float timeSpent, SceneNavigation sceneNavigation)
         {
             _sceneNavigation = sceneNavigation;
 
@@ -27,16 +25,15 @@ namespace Gameplay.Views
             
             _timeText.text = $"{minutes:0}:{seconds:00}";
             _buttonText.text = ContinueButtonText;
-            _starsCount = starsCount;
             transform.SetParent(parentTransform, false);
         }
         
         public void LoadMainMenu()
         {
-            SceneNavigation.LoadMainMenu();
+            _sceneNavigation.LoadMainMenu();
         }
         
-        public class Factory : PlaceholderFactory<Transform, float, int, WinMenu>
+        public class Factory : PlaceholderFactory<Transform, float, WinMenu>
         {
         }
     }   

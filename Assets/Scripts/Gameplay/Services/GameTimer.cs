@@ -12,10 +12,10 @@ namespace Gameplay.Services
 
         [SerializeField] private TextMeshProUGUI _timerText;
 
-        private float _currentTime;
         private GameManager _gameManager;
 
-        public float GameTime => _currentTime;
+        public float GameTime { get; private set; }
+
         public event Action TimeIsOver;
 
         [Inject]
@@ -26,22 +26,22 @@ namespace Gameplay.Services
 
         private void Start()
         {
-            _currentTime = TotalTime;
+            GameTime = TotalTime;
         }
 
         public void ResetTimer()
         {
-            _currentTime = TotalTime;
+            GameTime = TotalTime;
         }
 
         private void Update()
         {
-            if (_currentTime > 1 && _gameManager.CurrentGameState == GameState.Game)
+            if (GameTime > 1 && _gameManager.CurrentGameState == GameState.Game)
             {
-                _currentTime -= Time.deltaTime;
+                GameTime -= Time.deltaTime;
 
-                var minutes = Mathf.FloorToInt(_currentTime / TimeDivider);
-                var seconds = Mathf.FloorToInt(_currentTime % TimeDivider);
+                var minutes = Mathf.FloorToInt(GameTime / TimeDivider);
+                var seconds = Mathf.FloorToInt(GameTime % TimeDivider);
 
                 var timeText = $"{minutes:0}:{seconds:00}";
 

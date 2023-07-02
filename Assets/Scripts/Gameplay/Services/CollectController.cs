@@ -124,7 +124,7 @@ namespace Gameplay.Services
 
             if (_currentIndex >= 0 && _currentIndex + 2 < itemCount)
             {
-                for (int i = _currentIndex + 2; i >= _currentIndex; --i)
+                for (var i = _currentIndex + 2; i >= _currentIndex; --i)
                 {
                     Destroy(_items[i].gameObject);
                     _items.RemoveAt(i);
@@ -136,9 +136,7 @@ namespace Gameplay.Services
                 var item = _items[i];
                 var parentTransform = _itemsBases[i].transform;
                 item.transform.SetParent(parentTransform);
-
                 item.transform.SetSiblingIndex(i);
-
                 item.GetComponent<MovingController>().Launch(parentTransform.position);
             }
         }

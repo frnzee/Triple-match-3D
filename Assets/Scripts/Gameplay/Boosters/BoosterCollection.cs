@@ -12,6 +12,7 @@ namespace Gameplay.Boosters
         {
             _fanFactory = fanFactory;
         }
+        
         public void UseFan()
         {
             _fanFactory.Create();
