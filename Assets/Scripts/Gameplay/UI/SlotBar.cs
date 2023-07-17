@@ -12,6 +12,8 @@ namespace Gameplay.UI
         private GoalsController _goalsController;
         public int SlotCount => _goalSlots.Count;
 
+        private bool _isInitialized;
+
         [Inject]
         public void Construct(GoalsController goalsController)
         {
@@ -29,10 +31,20 @@ namespace Gameplay.UI
                     continue;
                 }
                 
-                goal.transform.SetParent(_goalSlots[i].transform, false);
-                var rectTransform = goal.GetComponent<RectTransform>();
-                rectTransform.anchoredPosition = Vector2.zero;
+                goal.transform.SetParent(_goalSlots[i].transform);
+                
+                if (!_isInitialized)
+                {
+                    var rectTransform = goal.GetComponent<RectTransform>();
+                    rectTransform.anchoredPosition = Vector2.zero;
+                }
+                else
+                {
+                    goal.GetComponent<MovingController>().Launch(goal.transform.parent.position);
+                }
             }
+
+            _isInitialized = true;
         }
     }
 }
