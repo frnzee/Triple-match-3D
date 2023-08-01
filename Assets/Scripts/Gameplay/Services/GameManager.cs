@@ -7,6 +7,7 @@ using Gameplay.Views;
 using Gameplay.UI;
 using Services;
 using Services.Audio;
+using static Services.SceneNavigation;
 using Random = UnityEngine.Random;
 
 namespace Gameplay.Services
@@ -14,14 +15,12 @@ namespace Gameplay.Services
     public class GameManager : MonoBehaviour
     {
         private const int MatchCountMultiplier = 3;
-        private const float TargetAspectRatio = 9f / 16f;
+        private const int ItemsToUseMultiplier = 3;
+        private const int ItemsToUseMinCount = 9;
         
         [SerializeField] private GameObject _spawnFieldTransform;
         [SerializeField] private GameObject _mainCanvas;
         [SerializeField] private List<Sprite> _goalIcons;
-        [SerializeField] private int _maxCountModifier;
-        [SerializeField] private int _itemsToUseCount;
-        [SerializeField] private Transform _worldRoot;
 
         private readonly List<GoalView> _spawnObjectList = new();
 
@@ -39,7 +38,6 @@ namespace Gameplay.Services
         private CollectableItem.Factory _collectableItemFactory;
         private WinMenu.Factory _winMenuFactory;
         private FailMenu.Factory _failMenuFactory;
-
 
         public List<CollectableItem> Items { get; } = new();
 
@@ -70,29 +68,18 @@ namespace Gameplay.Services
             SetUpGoals();
         }
 
-        private void Start()
-        {
-            var currentAspectRatio = (float)Screen.width / Screen.height;
-
-            if (!(Mathf.Abs(currentAspectRatio - TargetAspectRatio) > 0.01f))
-            {
-                return;
-            }
-            
-            var scaleFactor = new Vector3(TargetAspectRatio / currentAspectRatio, 1f, TargetAspectRatio / currentAspectRatio);
-            _worldRoot.localScale = Vector3.Scale(_worldRoot.localScale, scaleFactor);
-        }
-
         private void SetUpGoals()
         {
             var shuffledList = _goalIcons
                 .OrderBy(icon => Guid.NewGuid())
                 .ToList();
+            
+            var itemsCount = Mathf.Clamp(CurrentGameLevel * ItemsToUseMultiplier, ItemsToUseMinCount, _goalIcons.Count);
 
-            for (var i = 0; i < _itemsToUseCount; i++)
+            for (var i = 0; i < itemsCount; i++)
             {
                 var sprite = shuffledList[i];
-                var goalCount = Random.Range(1, _maxCountModifier) * MatchCountMultiplier;
+                var goalCount = Random.Range(1, CurrentGameLevel + 1) * MatchCountMultiplier;
                 var newGoal = _goalViewFactory.Create(sprite, goalCount);
                 
                 _originalSprites.Add(sprite);
@@ -166,7 +153,7 @@ namespace Gameplay.Services
 
         private void SpawnSameItems()
         {
-            for (var i = 0; i < _itemsToUseCount; i++)
+            for (var i = 0; i < _goalIcons.Count; i++)
             {
                 var newGoal = _goalViewFactory.Create(_originalSprites[i], _originalCounts[i]);
                 _spawnObjectList.Add(newGoal);
